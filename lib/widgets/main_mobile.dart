@@ -13,7 +13,7 @@ class MainMobile extends StatelessWidget {
 
     return Container(
       height: screenHeight,
-      constraints: const BoxConstraints(maxHeight: 500.0),
+      constraints: const BoxConstraints(maxHeight: 600.0),
       margin: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -30,7 +30,7 @@ class MainMobile extends StatelessWidget {
               ).createShader(bounds);
             },
             blendMode: BlendMode.srcATop,
-            child: Image.asset("pato_ikona.png", width: screenWidth / 2),
+            child: Image.asset("pato_ikona_2.png", width: screenWidth / 2),
           ),
 
           const Text(

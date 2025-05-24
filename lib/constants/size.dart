@@ -1,1 +1,1 @@
-const double kMinDesktopWidth = 600.0;
+const double kMinDesktopWidth = 700.0;

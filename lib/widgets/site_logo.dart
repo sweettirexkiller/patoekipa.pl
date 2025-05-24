@@ -14,10 +14,10 @@ class SiteLogo extends StatelessWidget {
         child: Text(
           'Patoekipa',
           style: TextStyle(
-            color: CustomColor.secondaryColor,
+            color: CustomColor.textColor,
             fontWeight: FontWeight.w500,
-            fontSize: 20,
-            decoration: TextDecoration.underline,
+            fontSize: 25,
+            // decoration: TextDecoration.underline,
           ),
         ),
       ),
