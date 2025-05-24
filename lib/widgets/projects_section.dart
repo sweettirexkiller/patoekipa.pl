@@ -20,7 +20,7 @@ class ProjectsSection extends StatelessWidget {
           children: <Widget>[
             // work projects title
             const Text(
-              "Work projects",
+              "Projekty",
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -46,7 +46,7 @@ class ProjectsSection extends StatelessWidget {
             const SizedBox(height: 80,),
 
             const Text(
-              "Hobby projects",
+              "Hobbystyczne",
               style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

@@ -20,14 +20,50 @@ class SkillsDesktop extends StatelessWidget {
         children: [
           // title
           const Text(
-            "What can I do ?",
+            "Członkowie i zdolności",
             style: TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           const SizedBox(
-            height: 50,
+            height: 30,
           ),
           // platforms and skills
+          // a Row of icons of people
+         Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 20,
+              children: [
+                for (int i = 0; i < 7; i++)
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: Colors.blueGrey.shade700,
+                          size: 30,
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Name $i", // Replace with actual names if available
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.blueGrey.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,

@@ -4,5 +4,5 @@ class SnsLinks {
   static const String facebook = "https://";
   static const String instagram = "https://www.google.com";
   static const String telegram = "https://";
-  static const String blog = "https://www.shohruhak.com/tech";
+  static const String blog = "https://";
 }

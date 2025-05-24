@@ -17,7 +17,7 @@ class ContactSection extends StatelessWidget {
         child: Column(
           children: [
             const Text(
-              "Get in touch",
+              "Projekty",
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 24,

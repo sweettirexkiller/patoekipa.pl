@@ -14,7 +14,7 @@ class Footer extends StatelessWidget {
       width: double.maxFinite,
       alignment: Alignment.center,
       child: const Text(
-        "© 2025 All rights reserved. Made with Flutter by Piotr Jankiewicz",
+        "© 2025 All rights reserved. Made by Piotr Jankiewicz",
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.black,
