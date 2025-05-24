@@ -21,7 +21,7 @@ class MainDesktop extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image.asset("pato_ikona_2.png", width: screenWidth / 3),
+                Image.asset("assets/pato_ikona_2.png", width: screenWidth / 3),
                 const Text(
                   "Cześć, tutaj Patoekipa!\n \nJesteśmy grupa przyjaciół z dzieciństwa, z której wszyscy \n skończyli w IT. \n\n Jesteśmy gotowi do działania!",
                   style: TextStyle(

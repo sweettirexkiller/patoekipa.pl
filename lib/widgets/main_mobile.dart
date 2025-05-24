@@ -30,7 +30,7 @@ class MainMobile extends StatelessWidget {
               ).createShader(bounds);
             },
             blendMode: BlendMode.srcATop,
-            child: Image.asset("pato_ikona_2.png", width: screenWidth / 2),
+            child: Image.asset("assets/pato_ikona_2.png", width: screenWidth / 2),
           ),
 
           const Text(
