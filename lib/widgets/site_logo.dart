@@ -12,7 +12,7 @@ class SiteLogo extends StatelessWidget {
       child: const Padding(
         padding: EdgeInsets.only(left: 20),
         child: Text(
-          'PJ',
+          'Patoekipa',
           style: TextStyle(
             color: CustomColor.secondaryColor,
             fontWeight: FontWeight.w500,

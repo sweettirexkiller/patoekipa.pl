@@ -13,7 +13,7 @@ class MainMobile extends StatelessWidget {
 
     return Container(
       height: screenHeight,
-      constraints: const BoxConstraints(maxHeight: 360.0),
+      constraints: const BoxConstraints(maxHeight: 500.0),
       margin: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 30.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -30,11 +30,11 @@ class MainMobile extends StatelessWidget {
               ).createShader(bounds);
             },
             blendMode: BlendMode.srcATop,
-            child: Image.asset("my_flutter_avatar.png", width: screenWidth / 2),
+            child: Image.asset("pato_ikona.png", width: screenWidth / 2),
           ),
 
           const Text(
-            "Hello,\n I am Piotr Jankiewicz \n a software engineer",
+            "Cześć, tutaj Patoekipa!\n \nJesteśmy grupa przyjaciół z dzieciństwa, z której wszyscy \n skończyli w IT. \n\n Jesteśmy gotowi do działania!",
             style: TextStyle(
                 height: 1.5,
                 color: CustomColor.textColor,
@@ -47,7 +47,7 @@ class MainMobile extends StatelessWidget {
           SizedBox(
             width: 190,
             child: ElevatedButton(
-                onPressed: () {}, child: const Text("Get in touch")),
+                onPressed: () {}, child: const Text("Napisz do nas")),
           )
         ],
       ),

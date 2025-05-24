@@ -21,8 +21,9 @@ class MainDesktop extends StatelessWidget {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Image.asset("pato_ikona.png", width: screenWidth / 3),
                 const Text(
-                  "Hello,\n I am Piotr Jankiewicz \n a software engineer",
+                  "Cześć, tutaj Patoekipa!\n \nJesteśmy grupa przyjaciół z dzieciństwa, z której wszyscy \n skończyli w IT. \n\n Jesteśmy gotowi do działania!",
                   style: TextStyle(
                       height: 1.5,
                       color: CustomColor.textColor,
@@ -35,11 +36,10 @@ class MainDesktop extends StatelessWidget {
                 SizedBox(
                   width: 250,
                   child: ElevatedButton(
-                      onPressed: () {}, child: const Text("Get in touch")),
+                      onPressed: () {}, child: const Text("Napisz do nas")),
                 )
               ],
             ),
-            Image.asset("my_flutter_avatar.png", width: screenWidth / 2),
           ],
         ));
   }
