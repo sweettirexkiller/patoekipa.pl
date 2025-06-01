@@ -1,0 +1,32 @@
+{
+  "name": "patoekipa-portfolio-monorepo",
+  "version": "1.0.0",
+  "description": "Patoekipa portfolio - Flutter and Next.js versions",
+  "private": true,
+  "scripts": {
+    "dev:nextjs": "cd nextjs && npm run dev",
+    "dev:flutter": "cd flutter && flutter run -d chrome",
+    "build:nextjs": "cd nextjs && npm run build",
+    "build:flutter": "cd flutter && flutter build web",
+    "install:nextjs": "cd nextjs && npm install",
+    "install:flutter": "cd flutter && flutter pub get",
+    "install:all": "npm run install:nextjs && npm run install:flutter",
+    "lint:nextjs": "cd nextjs && npm run lint",
+    "clean:flutter": "cd flutter && flutter clean",
+    "clean:nextjs": "cd nextjs && rm -rf .next node_modules",
+    "clean:all": "npm run clean:flutter && npm run clean:nextjs"
+  },
+  "keywords": [
+    "portfolio",
+    "flutter",
+    "nextjs",
+    "react",
+    "typescript",
+    "monorepo"
+  ],
+  "author": "Patoekipa Team",
+  "license": "MIT",
+  "workspaces": [
+    "nextjs"
+  ]
+} 
