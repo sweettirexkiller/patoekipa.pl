@@ -1,0 +1,77 @@
+{
+  "team": {
+    "name": "Patoekipa",
+    "description": "Grupa przyjaciół z dzieciństwa, która nadal utrzymuje kontakt oraz wszyscy z ekipy skończyli w IT.",
+    "tagline": "Childhood friends turned IT professionals"
+  },
+  "members": [
+    {
+      "id": "piotr",
+      "name": "Piotr Jankiewicz",
+      "role": "Full-Stack Developer",
+      "bio": "Pasjonat technologii mobilnych i webowych. Specjalizuje się w Flutter i React, tworzy aplikacje od koncepcji do wdrożenia.",
+      "skills": ["Flutter", "Dart", "React", "TypeScript", "Node.js", "Firebase", "PostgreSQL"],
+      "avatar": "/shared/assets/avatars/piotr.jpg",
+      "portfolioUrl": "https://piotr.patoekipa.pl",
+      "social": {
+        "github": "https://github.com/sweettirexkiller",
+        "linkedin": "https://linkedin.com/in/piotr-jankiewicz"
+      }
+    },
+    {
+      "id": "member2", 
+      "name": "Michał Kowalski",
+      "role": "Backend Developer",
+      "bio": "Expert w architekturze systemów i bazach danych. Tworzy skalowalne rozwiązania backendowe z wykorzystaniem najnowszych technologii.",
+      "skills": ["Node.js", "Python", "PostgreSQL", "MongoDB", "Docker", "AWS", "Kubernetes"],
+      "avatar": "/shared/assets/avatars/michal.jpg",
+      "portfolioUrl": "https://michal.patoekipa.pl",
+      "social": {
+        "github": "https://github.com/michal-kowalski",
+        "linkedin": "https://linkedin.com/in/michal-kowalski"
+      }
+    },
+    {
+      "id": "member3",
+      "name": "Anna Nowak",
+      "role": "Frontend Developer",
+      "bio": "Specjalistka od interfejsów użytkownika i doświadczeń użytkownika. Tworzy piękne i funkcjonalne aplikacje webowe.",
+      "skills": ["React", "Vue.js", "TypeScript", "Tailwind CSS", "Figma", "Next.js", "Nuxt.js"],
+      "avatar": "/shared/assets/avatars/anna.jpg",
+      "portfolioUrl": "https://anna.patoekipa.pl",
+      "social": {
+        "github": "https://github.com/anna-nowak",
+        "linkedin": "https://linkedin.com/in/anna-nowak"
+      }
+    },
+    {
+      "id": "member4",
+      "name": "Tomasz Wiśniewski",
+      "role": "DevOps Engineer",
+      "bio": "Odpowiedzialny za infrastrukturę i automatyzację procesów. Zapewnia płynne działanie aplikacji w środowisku produkcyjnym.",
+      "skills": ["Docker", "Kubernetes", "AWS", "Terraform", "Jenkins", "GitLab CI", "Monitoring"],
+      "avatar": "/shared/assets/avatars/tomasz.jpg",
+      "portfolioUrl": "https://tomasz.patoekipa.pl",
+      "social": {
+        "github": "https://github.com/tomasz-wisniewski",
+        "linkedin": "https://linkedin.com/in/tomasz-wisniewski"
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": "project1",
+      "title": "Projekt Portfolio",
+      "description": "Wspólne portfolio zespołu Patoekipa",
+      "technologies": ["Flutter", "Next.js", "TypeScript"],
+      "image": "/shared/assets/projects/portfolio.jpg",
+      "github": "https://github.com/patoekipa/portfolio",
+      "demo": "https://patoekipa.pl",
+      "status": "active"
+    }
+  ],
+  "contact": {
+    "email": "hello@patoekipa.pl",
+    "location": "Poland"
+  }
+} 
