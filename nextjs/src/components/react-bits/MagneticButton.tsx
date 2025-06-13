@@ -3,12 +3,11 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useRef, useState } from 'react'
 
-interface MagneticButtonProps {
+interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode
   className?: string
   strength?: number
   range?: number
-  onClick?: () => void
 }
 
 export function MagneticButton({ 
@@ -16,7 +15,7 @@ export function MagneticButton({
   className = '',
   strength = 0.4,
   range = 80,
-  onClick
+  ...buttonProps
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -55,15 +54,17 @@ export function MagneticButton({
     setIsHovered(true)
   }
 
+  const MotionComponent = motion.button
+
   return (
-    <motion.button
+    <MotionComponent
       ref={ref}
       className={`relative inline-flex items-center justify-center ${className}`}
       style={{ x: springX, y: springY }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
-      onClick={onClick}
+      {...buttonProps}
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
@@ -86,6 +87,6 @@ export function MagneticButton({
         }}
         transition={{ duration: 0.3 }}
       />
-    </motion.button>
+    </MotionComponent>
   )
 } 

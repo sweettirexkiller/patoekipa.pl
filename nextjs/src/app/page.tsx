@@ -7,7 +7,7 @@ import { TestimonialsSection } from '@/components/TestimonialsSection'
 import { ContactSection } from '@/components/ContactSection'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
-import { FloatingDots, ParticleCursor, HyperspeedBackground, GlowingOrbs, AnimatedGrid, InteractiveRipples } from '@/components/react-bits'
+import { FloatingDots, ParticleCursor, HyperspeedBackground, GlowingOrbs, AnimatedGrid, InteractiveRipples, ScrollProgress, BackToTop } from '@/components/react-bits'
 
 export default function Home() {
   return (
@@ -37,6 +37,12 @@ export default function Home() {
       
       {/* Interactive particle cursor */}
       <ParticleCursor />
+      
+      {/* Scroll progress indicator */}
+      <ScrollProgress showPercentage={true} />
+      
+      {/* Back to top button */}
+      <BackToTop />
     </main>
   )
 }

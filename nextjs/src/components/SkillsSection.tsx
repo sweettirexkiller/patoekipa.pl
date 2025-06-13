@@ -1,85 +1,63 @@
 'use client'
 
-import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
-import { FloatingCard, ScrambledText } from './react-bits'
+import { ScrambledText } from './react-bits'
 
-const platformItems = [
+interface PlatformItem {
+  title: string
+  description: string
+  icon: string
+  gradient: string
+}
+
+interface SkillItem {
+  title: string
+  category: string
+  icon: string
+  level: number
+  color: string
+}
+
+const platformItems: PlatformItem[] = [
   {
-    img: "android_icon.png",
-    title: "Android Dev",
-    description: "Natywne aplikacje mobilne",
-    gradient: "from-green-500 to-green-600"
+    title: 'Web Development',
+    description: 'Nowoczesne aplikacje webowe',
+    icon: '🌐',
+    gradient: 'from-blue-500 to-cyan-500'
   },
   {
-    img: "web_icon.png", 
-    title: "Web Dev",
-    description: "Nowoczesne aplikacje webowe",
-    gradient: "from-blue-500 to-blue-600"
+    title: 'Mobile Apps',
+    description: 'Aplikacje mobilne iOS/Android',
+    icon: '📱',
+    gradient: 'from-purple-500 to-pink-500'
   },
   {
-    img: "ios_icon.png",
-    title: "iOS Dev",
-    description: "Aplikacje na platformę Apple",
-    gradient: "from-gray-500 to-gray-600"
+    title: 'Desktop Apps',
+    description: 'Aplikacje desktopowe',
+    icon: '💻',
+    gradient: 'from-green-500 to-emerald-500'
   },
   {
-    img: "desktop_icon.png",
-    title: "Desktop Dev",
-    description: "Aplikacje desktopowe",
-    gradient: "from-purple-500 to-purple-600"
+    title: 'Cloud Solutions',
+    description: 'Rozwiązania chmurowe',
+    icon: '☁️',
+    gradient: 'from-orange-500 to-red-500'
   }
 ]
 
-const skillItems = [
-  {
-    img: "flutter.png",
-    title: "Flutter",
-    category: "Mobile",
-    level: 95
-  },
-  {
-    img: "dart.png",
-    title: "Dart",
-    category: "Language",
-    level: 90
-  },
-  {
-    img: "html5.png",
-    title: "HTML5",
-    category: "Frontend",
-    level: 95
-  },
-  {
-    img: "css3.png",
-    title: "CSS3",
-    category: "Frontend",
-    level: 90
-  },
-  {
-    img: "javascript.png",
-    title: "JavaScript",
-    category: "Language",
-    level: 85
-  },
-  {
-    img: "hugo.png",
-    title: "Hugo",
-    category: "Static Site",
-    level: 80
-  },
-  {
-    img: "docker.png",
-    title: "Docker",
-    category: "DevOps",
-    level: 85
-  },
-  {
-    img: "python.png",
-    title: "Python",
-    category: "Backend",
-    level: 80
-  }
+const skillItems: SkillItem[] = [
+  { title: 'React', category: 'Frontend', icon: '⚛️', level: 95, color: 'text-blue-500' },
+  { title: 'Next.js', category: 'Framework', icon: '▲', level: 90, color: 'text-slate-800 dark:text-white' },
+  { title: 'TypeScript', category: 'Language', icon: 'TS', level: 88, color: 'text-blue-600' },
+  { title: 'Node.js', category: 'Backend', icon: '🟢', level: 85, color: 'text-green-600' },
+  { title: 'Python', category: 'Language', icon: '🐍', level: 82, color: 'text-yellow-500' },
+  { title: 'PostgreSQL', category: 'Database', icon: '🐘', level: 80, color: 'text-blue-700' },
+  { title: 'Docker', category: 'DevOps', icon: '🐳', level: 78, color: 'text-blue-500' },
+  { title: 'AWS', category: 'Cloud', icon: '☁️', level: 75, color: 'text-orange-500' },
+  { title: 'React Native', category: 'Mobile', icon: '📱', level: 85, color: 'text-blue-400' },
+  { title: 'Flutter', category: 'Mobile', icon: '🦋', level: 70, color: 'text-blue-400' },
+  { title: 'GraphQL', category: 'API', icon: '◆', level: 75, color: 'text-pink-500' },
+  { title: 'MongoDB', category: 'Database', icon: '🍃', level: 80, color: 'text-green-500' }
 ]
 
 export function SkillsSection() {
@@ -154,32 +132,21 @@ export function SkillsSection() {
                 }`}
                 style={{ transitionDelay: `${index * 150}ms` }}
               >
-                <FloatingCard
-                  className="h-full"
-                  glowColor="rgba(59, 130, 246, 0.3)"
-                  intensity={0.3}
-                >
-                  <div className="group glass rounded-3xl p-8 shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10">
-                    <div className="flex flex-col items-center space-y-6">
-                      <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${item.gradient} p-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                        <Image
-                          src={`/shared/assets/${item.img}`}
-                          alt={item.title}
-                          fill
-                          className="object-contain p-2 filter brightness-0 invert"
-                        />
-                      </div>
-                      <div className="text-center">
-                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                          {item.description}
-                        </p>
-                      </div>
+                <div className="group glass rounded-3xl p-8 shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
+                  <div className="flex flex-col items-center space-y-6">
+                    <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${item.gradient} p-4 group-hover:scale-110 transition-transform duration-300 shadow-lg flex items-center justify-center`}>
+                      <span className="text-3xl">{item.icon}</span>
+                    </div>
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
+                        {item.description}
+                      </p>
                     </div>
                   </div>
-                </FloatingCard>
+                </div>
               </div>
             ))}
           </div>
@@ -204,56 +171,47 @@ export function SkillsSection() {
                 onMouseEnter={() => setHoveredSkill(item.title)}
                 onMouseLeave={() => setHoveredSkill(null)}
               >
-                <FloatingCard
-                  className="h-full"
-                  glowColor={`rgba(${index % 2 === 0 ? '59, 130, 246' : '139, 92, 246'}, 0.4)`}
-                  intensity={0.4}
-                >
-                  <div className="group glass rounded-3xl p-6 shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10">
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="relative w-16 h-16 group-hover:scale-110 transition-transform duration-300">
-                        <Image
-                          src={`/shared/assets/${item.img}`}
-                          alt={item.title}
-                          fill
-                          className="object-contain drop-shadow-lg"
-                        />
-                      </div>
-                      
-                      <div className="text-center flex-1">
-                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">
-                          {hoveredSkill === item.title ? (
-                            <ScrambledText 
-                              text={item.title}
-                              className="gradient-text"
-                              scrambleSpeed={25}
-                              characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-                            />
-                          ) : (
-                            item.title
-                          )}
-                        </h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
-                          {item.category}
-                        </p>
-                        
-                        {/* Skill Level Bar */}
-                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-2">
-                          <div 
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-1000 ease-out"
-                            style={{ 
-                              width: isVisible ? `${item.level}%` : '0%',
-                              transitionDelay: `${(index + 4) * 100 + 500}ms`
-                            }}
-                          />
-                        </div>
-                        <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-                          {item.level}%
-                        </span>
+                <div className="group glass rounded-3xl p-6 shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="relative w-16 h-16 group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
+                      <div className={`w-12 h-12 flex items-center justify-center text-2xl font-bold ${item.color}`}>
+                        {item.icon}
                       </div>
                     </div>
+                    
+                    <div className="text-center flex-1">
+                      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">
+                        {hoveredSkill === item.title ? (
+                          <ScrambledText 
+                            text={item.title}
+                            className="gradient-text"
+                            scrambleSpeed={25}
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                          />
+                        ) : (
+                          item.title
+                        )}
+                      </h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
+                        {item.category}
+                      </p>
+                      
+                      {/* Skill Level Bar */}
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-2">
+                        <div 
+                          className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-1000 ease-out"
+                          style={{ 
+                            width: isVisible ? `${item.level}%` : '0%',
+                            transitionDelay: `${(index + 4) * 100 + 500}ms`
+                          }}
+                        />
+                      </div>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        {item.level}%
+                      </span>
+                    </div>
                   </div>
-                </FloatingCard>
+                </div>
               </div>
             ))}
           </div>

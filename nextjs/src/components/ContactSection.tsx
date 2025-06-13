@@ -1,8 +1,7 @@
 'use client'
 
-import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
-import { FloatingCard, ScrambledText, MagneticButton } from './react-bits'
+import { FloatingCard, ScrambledText, MagneticButton, LoadingSpinner } from './react-bits'
 
 export function ContactSection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -11,8 +10,10 @@ export function ContactSection() {
     email: '',
     message: ''
   })
-  const [hoveredMethod, setHoveredMethod] = useState<string | null>(null)
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [hoveredMethod, setHoveredMethod] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -40,48 +41,70 @@ export function ContactSection() {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
+    setIsSubmitting(true)
+    setSubmitStatus('idle')
+    
+    // Simulate form submission
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Simulate random success/error for demo
+      if (Math.random() > 0.3) {
+        setSubmitStatus('success')
+        setFormData({ name: '', email: '', message: '' })
+      } else {
+        setSubmitStatus('error')
+      }
+    } catch (error) {
+      setSubmitStatus('error')
+    } finally {
+      setIsSubmitting(false)
+      
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setSubmitStatus('idle')
+      }, 3000)
+    }
   }
 
   const contactMethods = [
     {
       id: 'email',
+      title: 'Email',
+      description: 'Napisz do nas',
+      value: 'kontakt@patoekipa.pl',
+      href: 'mailto:kontakt@patoekipa.pl',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
-      ),
-      title: 'Email',
-      description: 'Napisz do nas',
-      value: 'contact@patoekipa.pl',
-      href: 'mailto:contact@patoekipa.pl'
+      )
     },
     {
-      id: 'github',
+      id: 'phone',
+      title: 'Telefon',
+      description: 'Zadzwoń do nas',
+      value: '+48 123 456 789',
+      href: 'tel:+48123456789',
       icon: (
-        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-          <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
         </svg>
-      ),
-      title: 'GitHub',
-      description: 'Zobacz nasze projekty',
-      value: 'github.com/patoekipa',
-      href: 'https://github.com/patoekipa'
+      )
     },
     {
       id: 'linkedin',
+      title: 'LinkedIn',
+      description: 'Znajdź nas na LinkedIn',
+      value: 'linkedin.com/company/patoekipa',
+      href: 'https://linkedin.com/company/patoekipa',
       icon: (
         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
           <path fillRule="evenodd" d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z" clipRule="evenodd" />
         </svg>
-      ),
-      title: 'LinkedIn',
-      description: 'Połącz się z nami',
-      value: 'linkedin.com/company/patoekipa',
-      href: 'https://linkedin.com/company/patoekipa'
+      )
     }
   ]
 
@@ -124,114 +147,138 @@ export function ContactSection() {
             <div className={`transition-all duration-1000 delay-200 ${
               isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
             }`}>
-              <FloatingCard
-                className="h-full"
-                glowColor="rgba(59, 130, 246, 0.4)"
-                intensity={0.4}
-              >
-                <div className="glass rounded-3xl p-8 border border-white/10 h-full">
-                  <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">
-                    <ScrambledText 
-                      text="Wyślij wiadomość"
-                      className="gradient-text"
-                      scrambleSpeed={40}
-                    />
-                  </h3>
-                  
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Name and Email Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          {focusedField === 'name' ? (
-                            <ScrambledText 
-                              text="Imię i nazwisko"
-                              scrambleSpeed={20}
-                              characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
-                            />
-                          ) : (
-                            'Imię i nazwisko'
-                          )}
-                        </label>
-                        <input
-                          type="text"
-                          name="name"
-                          placeholder="Jan Kowalski"
-                          value={formData.name}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('name')}
-                          onBlur={() => setFocusedField(null)}
-                          className="w-full px-4 py-3 rounded-xl glass border border-white/20 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          required
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          {focusedField === 'email' ? (
-                            <ScrambledText 
-                              text="Email"
-                              scrambleSpeed={20}
-                              characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-                            />
-                          ) : (
-                            'Email'
-                          )}
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          placeholder="jan@example.com"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          onFocus={() => setFocusedField('email')}
-                          onBlur={() => setFocusedField(null)}
-                          className="w-full px-4 py-3 rounded-xl glass border border-white/20 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          required
-                        />
-                      </div>
-                    </div>
-
-                    {/* Message */}
+              <div className="glass rounded-3xl p-8 border border-white/10 h-full hover:border-white/20 transition-all duration-300">
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-6">
+                  <ScrambledText 
+                    text="Wyślij wiadomość"
+                    className="gradient-text"
+                    scrambleSpeed={40}
+                  />
+                </h3>
+                
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Name and Email Row */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        {focusedField === 'message' ? (
+                        {focusedField === 'name' ? (
                           <ScrambledText 
-                            text="Wiadomość"
+                            text="Imię i nazwisko"
+                            scrambleSpeed={20}
+                            characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz "
+                          />
+                        ) : (
+                          'Imię i nazwisko'
+                        )}
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Jan Kowalski"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField('name')}
+                        onBlur={() => setFocusedField(null)}
+                        className="w-full px-4 py-3 rounded-xl glass border border-white/20 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        {focusedField === 'email' ? (
+                          <ScrambledText 
+                            text="Email"
                             scrambleSpeed={20}
                             characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
                           />
                         ) : (
-                          'Wiadomość'
+                          'Email'
                         )}
                       </label>
-                      <textarea
-                        name="message"
-                        placeholder="Opisz swój projekt lub zadaj pytanie..."
-                        value={formData.message}
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="jan@example.com"
+                        value={formData.email}
                         onChange={handleInputChange}
-                        onFocus={() => setFocusedField('message')}
+                        onFocus={() => setFocusedField('email')}
                         onBlur={() => setFocusedField(null)}
-                        rows={6}
-                        className="w-full px-4 py-3 rounded-xl glass border border-white/20 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                        className="w-full px-4 py-3 rounded-xl glass border border-white/20 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                         required
                       />
                     </div>
+                  </div>
 
-                    {/* Submit Button */}
-                    <MagneticButton
-                      className="w-full btn-primary group"
-                      strength={0.3}
-                    >
-                      <span className="flex items-center justify-center gap-2">
-                        Wyślij wiadomość
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                      </span>
-                    </MagneticButton>
-                  </form>
-                </div>
-              </FloatingCard>
+                  {/* Message */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      {focusedField === 'message' ? (
+                        <ScrambledText 
+                          text="Wiadomość"
+                          scrambleSpeed={20}
+                          characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+                        />
+                      ) : (
+                        'Wiadomość'
+                      )}
+                    </label>
+                    <textarea
+                      name="message"
+                      placeholder="Opisz swój projekt lub zadaj pytanie..."
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      onFocus={() => setFocusedField('message')}
+                      onBlur={() => setFocusedField(null)}
+                      rows={6}
+                      className="w-full px-4 py-3 rounded-xl glass border border-white/20 text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                      required
+                    />
+                  </div>
+
+                  {/* Submit Button */}
+                  <MagneticButton
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`w-full btn-primary group relative overflow-hidden ${
+                      isSubmitting ? 'opacity-80 cursor-not-allowed' : ''
+                    } ${
+                      submitStatus === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                      submitStatus === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600' : ''
+                    }`}
+                    strength={isSubmitting ? 0 : 0.3}
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      {isSubmitting ? (
+                        <>
+                          <LoadingSpinner size="sm" variant="dots" />
+                          Wysyłanie...
+                        </>
+                      ) : submitStatus === 'success' ? (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          Wysłano!
+                        </>
+                      ) : submitStatus === 'error' ? (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          Błąd wysyłania
+                        </>
+                      ) : (
+                        <>
+                          Wyślij wiadomość
+                          <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          </svg>
+                        </>
+                      )}
+                    </span>
+                  </MagneticButton>
+                </form>
+              </div>
             </div>
 
             {/* Contact Information */}
@@ -260,52 +307,46 @@ export function ContactSection() {
                       onMouseEnter={() => setHoveredMethod(method.id)}
                       onMouseLeave={() => setHoveredMethod(null)}
                     >
-                      <FloatingCard
-                        className="w-full"
-                        glowColor={`rgba(${index === 0 ? '59, 130, 246' : index === 1 ? '139, 92, 246' : '236, 72, 153'}, 0.3)`}
-                        intensity={0.3}
+                      <a
+                        href={method.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block glass rounded-2xl p-6 border border-white/10 hover:bg-white/5 dark:hover:bg-white/5 hover:border-white/20 transition-all duration-300 group hover:scale-105"
                       >
-                        <a
-                          href={method.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block glass rounded-2xl p-6 border border-white/10 hover:bg-white/5 dark:hover:bg-white/5 transition-all duration-300 group"
-                        >
-                          <div className="flex items-center space-x-4">
-                            <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${
-                              index === 0 ? 'from-blue-500 to-blue-600' :
-                              index === 1 ? 'from-purple-500 to-purple-600' :
-                              'from-pink-500 to-pink-600'
-                            } flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
-                              {method.icon}
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-slate-800 dark:text-white mb-1">
-                                {hoveredMethod === method.id ? (
-                                  <ScrambledText 
-                                    text={method.title}
-                                    className="gradient-text"
-                                    scrambleSpeed={25}
-                                  />
-                                ) : (
-                                  method.title
-                                )}
-                              </h4>
-                              <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                                {method.description}
-                              </p>
-                              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                                {method.value}
-                              </p>
-                            </div>
-                            <div className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors">
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
-                            </div>
+                        <div className="flex items-center space-x-4">
+                          <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${
+                            index === 0 ? 'from-blue-500 to-blue-600' :
+                            index === 1 ? 'from-purple-500 to-purple-600' :
+                            'from-pink-500 to-pink-600'
+                          } flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
+                            {method.icon}
                           </div>
-                        </a>
-                      </FloatingCard>
+                          <div className="flex-1">
+                            <h4 className="text-lg font-semibold text-slate-800 dark:text-white mb-1">
+                              {hoveredMethod === method.id ? (
+                                <ScrambledText 
+                                  text={method.title}
+                                  className="gradient-text"
+                                  scrambleSpeed={25}
+                                />
+                              ) : (
+                                method.title
+                              )}
+                            </h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                              {method.description}
+                            </p>
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                              {method.value}
+                            </p>
+                          </div>
+                          <div className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </div>
+                        </div>
+                      </a>
                     </div>
                   ))}
                 </div>
