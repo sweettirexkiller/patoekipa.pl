@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { ScrambledText } from './react-bits'
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -45,7 +46,7 @@ export function Header() {
               onClick={() => scrollToSection('home')}
               className="text-2xl md:text-3xl font-bold gradient-text hover:scale-105 transition-transform duration-300 focus-ring rounded-lg px-2 py-1"
             >
-              Patoekipa
+              <ScrambledText text="Patoekipa" />
             </button>
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-20 group-hover:opacity-40 transition duration-300"></div>
           </div>

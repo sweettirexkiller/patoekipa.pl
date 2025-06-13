@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { TextReveal, MagneticButton, TypewriterText, RotatingText } from './react-bits'
 
 export function HeroSection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -49,22 +50,42 @@ export function HeroSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-slate-800 dark:text-white mb-8 leading-tight">
-              Cześć, tutaj{' '}
-              <span className="gradient-text animate-shimmer bg-clip-text">
-                Patoekipa!
-              </span>
+              <TypewriterText 
+                texts={[
+                  "Cześć, tutaj Patoekipa!",
+                  "Witamy w naszym świecie!",
+                  "Jesteśmy gotowi kodować!",
+                  "Tworzymy przyszłość IT!"
+                ]}
+                typingSpeed={80}
+                delayBetweenTexts={3000}
+              />
             </h1>
             
             <div className="max-w-5xl mx-auto space-y-6">
-              <p className="text-xl md:text-2xl lg:text-3xl text-slate-600 dark:text-slate-300 leading-relaxed font-light">
-                Jesteśmy grupą przyjaciół z dzieciństwa, z której wszyscy skończyli w IT.
-              </p>
+              <div className="text-xl md:text-2xl lg:text-3xl text-slate-600 dark:text-slate-300 leading-relaxed font-light">
+                <TextReveal text="Jesteśmy grupą przyjaciół z dzieciństwa, z której wszyscy skończyli w IT." />
+              </div>
               
               <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto rounded-full"></div>
               
-              <p className="text-lg md:text-xl lg:text-2xl font-semibold text-slate-700 dark:text-slate-200">
-                Jesteśmy gotowi do działania!
-              </p>
+              <div className="text-lg md:text-xl lg:text-2xl font-semibold text-slate-700 dark:text-slate-200 flex flex-wrap items-center justify-center">
+                <TextReveal text="Jesteśmy gotowi do " delay={0.5} />
+                <RotatingText 
+                  words={[
+                    'działania!',
+                    'kodowania!', 
+                    'tworzenia!',
+                    'innowacji!',
+                    'przyszłości!',
+                    'współpracy!',
+                    'rozwoju!',
+                    'wyzwań!'
+                  ]}
+                  animationType="bounce"
+                  interval={2000}
+                />
+              </div>
             </div>
           </div>
 
@@ -73,9 +94,10 @@ export function HeroSection() {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
             <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <button
+              <MagneticButton
                 onClick={scrollToContact}
-                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 overflow-hidden"
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl text-lg shadow-lg overflow-hidden"
+                strength={0.5}
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Napisz do nas
@@ -84,11 +106,12 @@ export function HeroSection() {
                   </svg>
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
+              </MagneticButton>
               
-              <button
+              <MagneticButton
                 onClick={scrollToTeam}
-                className="group px-8 py-4 glass border border-white/20 dark:border-white/10 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:bg-white/20 dark:hover:bg-white/10"
+                className="group px-8 py-4 glass border border-white/20 dark:border-white/10 shadow-lg hover:bg-white/20 dark:hover:bg-white/10"
+                strength={0.3}
               >
                 <span className="flex items-center gap-2">
                   Poznaj zespół
@@ -96,7 +119,7 @@ export function HeroSection() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                   </svg>
                 </span>
-              </button>
+              </MagneticButton>
             </div>
           </div>
 
