@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
+import { FloatingCard, ScrambledText } from './react-bits'
 
 const platformItems = [
   {
@@ -83,6 +84,7 @@ const skillItems = [
 
 export function SkillsSection() {
   const [isVisible, setIsVisible] = useState(false)
+  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -147,29 +149,37 @@ export function SkillsSection() {
             {platformItems.map((item, index) => (
               <div
                 key={item.title}
-                className={`group glass rounded-3xl p-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-500 animate-fade-in-up border border-white/10 ${
+                className={`animate-fade-in-up ${
                   isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
                 style={{ transitionDelay: `${index * 150}ms` }}
               >
-                <div className="flex flex-col items-center space-y-6">
-                  <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${item.gradient} p-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                    <Image
-                      src={`/shared/assets/${item.img}`}
-                      alt={item.title}
-                      fill
-                      className="object-contain p-2 filter brightness-0 invert"
-                    />
+                <FloatingCard
+                  className="h-full"
+                  glowColor="rgba(59, 130, 246, 0.3)"
+                  intensity={0.3}
+                >
+                  <div className="group glass rounded-3xl p-8 shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10">
+                    <div className="flex flex-col items-center space-y-6">
+                      <div className={`relative w-20 h-20 rounded-2xl bg-gradient-to-br ${item.gradient} p-4 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                        <Image
+                          src={`/shared/assets/${item.img}`}
+                          alt={item.title}
+                          fill
+                          className="object-contain p-2 filter brightness-0 invert"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+                          {item.title}
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-300">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
-                      {item.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
+                </FloatingCard>
               </div>
             ))}
           </div>
@@ -187,47 +197,63 @@ export function SkillsSection() {
             {skillItems.map((item, index) => (
               <div
                 key={item.title}
-                className={`group glass rounded-3xl p-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-500 animate-fade-in-up border border-white/10 ${
+                className={`animate-fade-in-up ${
                   isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                 }`}
                 style={{ transitionDelay: `${(index + 4) * 100}ms` }}
+                onMouseEnter={() => setHoveredSkill(item.title)}
+                onMouseLeave={() => setHoveredSkill(null)}
               >
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="relative w-16 h-16 group-hover:scale-110 transition-transform duration-300">
-                    <Image
-                      src={`/shared/assets/${item.img}`}
-                      alt={item.title}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  
-                  <div className="text-center w-full">
-                    <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-1">
-                      {item.title}
-                    </h4>
-                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-full">
-                      {item.category}
-                    </span>
-                  </div>
-
-                  {/* Skill Level Bar */}
-                  <div className="w-full">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-slate-600 dark:text-slate-400">Poziom</span>
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.level}%</span>
+                <FloatingCard
+                  className="h-full"
+                  glowColor={`rgba(${index % 2 === 0 ? '59, 130, 246' : '139, 92, 246'}, 0.4)`}
+                  intensity={0.4}
+                >
+                  <div className="group glass rounded-3xl p-6 shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="relative w-16 h-16 group-hover:scale-110 transition-transform duration-300">
+                        <Image
+                          src={`/shared/assets/${item.img}`}
+                          alt={item.title}
+                          fill
+                          className="object-contain drop-shadow-lg"
+                        />
+                      </div>
+                      
+                      <div className="text-center flex-1">
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1">
+                          {hoveredSkill === item.title ? (
+                            <ScrambledText 
+                              text={item.title}
+                              className="gradient-text"
+                              scrambleSpeed={25}
+                              characters="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+                            />
+                          ) : (
+                            item.title
+                          )}
+                        </h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
+                          {item.category}
+                        </p>
+                        
+                        {/* Skill Level Bar */}
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-2">
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-1000 ease-out"
+                            style={{ 
+                              width: isVisible ? `${item.level}%` : '0%',
+                              transitionDelay: `${(index + 4) * 100 + 500}ms`
+                            }}
+                          />
+                        </div>
+                        <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                          {item.level}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 h-2 rounded-full transition-all duration-1000 ease-out"
-                        style={{ 
-                          width: isVisible ? `${item.level}%` : '0%',
-                          transitionDelay: `${(index + 4) * 100 + 500}ms`
-                        }}
-                      ></div>
-                    </div>
                   </div>
-                </div>
+                </FloatingCard>
               </div>
             ))}
           </div>
