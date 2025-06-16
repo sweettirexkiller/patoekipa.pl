@@ -17,66 +17,9 @@ interface TeamMember {
   }
 }
 
-const teamData = {
-  team: {
-    name: "PatoEkipa",
-    description: "Zespół pasjonatów technologii, którzy tworzą nowoczesne rozwiązania cyfrowe"
-  },
-  members: [
-    {
-      id: "1",
-      name: "Michał Mozdowski",
-      role: "Full-Stack Developer & Team Lead",
-      bio: "Doświadczony programista z pasją do nowoczesnych technologii. Specjalizuje się w React, Node.js i architekturze aplikacji. Lider zespołu z 8-letnim doświadczeniem w branży IT.",
-      skills: ["React", "Node.js", "TypeScript", "PostgreSQL", "Docker", "AWS", "Team Leadership"],
-      avatar: "/team/michal.jpg",
-      portfolioUrl: "https://michal.patoekipa.pl",
-      social: {
-        github: "https://github.com/mozdowski",
-        linkedin: "https://linkedin.com/in/michal-mozdowski"
-      }
-    },
-    {
-      id: "2", 
-      name: "Patryk Kowalski",
-      role: "Frontend Developer & UI/UX Designer",
-      bio: "Kreatywny frontend developer z okiem do designu. Tworzy intuicyjne interfejsy użytkownika i dba o najlepsze doświadczenia UX. Specjalista od animacji i interaktywnych elementów.",
-      skills: ["React", "Next.js", "Tailwind CSS", "Figma", "Framer Motion", "Three.js", "UI/UX Design"],
-      avatar: "/team/patryk.jpg",
-      portfolioUrl: "https://patryk.patoekipa.pl",
-      social: {
-        github: "https://github.com/patryk-kowalski",
-        linkedin: "https://linkedin.com/in/patryk-kowalski"
-      }
-    },
-    {
-      id: "3",
-      name: "Anna Nowak", 
-      role: "Backend Developer & DevOps Engineer",
-      bio: "Ekspertka w dziedzinie backend development i infrastruktury chmurowej. Odpowiedzialna za skalowalność i bezpieczeństwo aplikacji. Pasjonatka automatyzacji i CI/CD.",
-      skills: ["Python", "Django", "PostgreSQL", "Redis", "Kubernetes", "Terraform", "CI/CD"],
-      avatar: "/team/anna.jpg",
-      portfolioUrl: "https://anna.patoekipa.pl",
-      social: {
-        github: "https://github.com/anna-nowak",
-        linkedin: "https://linkedin.com/in/anna-nowak"
-      }
-    },
-    {
-      id: "4",
-      name: "Jakub Wiśniewski",
-      role: "Mobile Developer & QA Engineer", 
-      bio: "Specjalista od aplikacji mobilnych i zapewnienia jakości oprogramowania. Tworzy aplikacje na iOS i Android używając React Native i Flutter. Dba o wysoką jakość kodu.",
-      skills: ["React Native", "Flutter", "Swift", "Kotlin", "Jest", "Cypress", "Mobile Testing"],
-      avatar: "/team/jakub.jpg",
-      portfolioUrl: "https://jakub.patoekipa.pl",
-      social: {
-        github: "https://github.com/jakub-wisniewski",
-        linkedin: "https://linkedin.com/in/jakub-wisniewski"
-      }
-    }
-  ]
-}
+import portfolioData from '../../../shared/content/portfolio.json'
+
+const teamData = portfolioData
 
 function MemberCard({ member, index }: { member: TeamMember; index: number }) {
   const [isFlipped, setIsFlipped] = useState(false)

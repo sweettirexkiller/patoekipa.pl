@@ -19,16 +19,16 @@
       }
     },
     {
-      "id": "member2", 
-      "name": "Michał Kowalski",
-      "role": "Backend Developer",
-      "bio": "Expert w architekturze systemów i bazach danych. Tworzy skalowalne rozwiązania backendowe z wykorzystaniem najnowszych technologii.",
-      "skills": ["Node.js", "Python", "PostgreSQL", "MongoDB", "Docker", "AWS", "Kubernetes"],
-      "avatar": "/shared/assets/avatars/michal.jpg",
-      "portfolioUrl": "https://michal.patoekipa.pl",
+      "id": "mozdowski", 
+      "name": "Mikołaj Ozdowski",
+      "role": "Full-Stack Developer",
+      "bio": "Fullstack developer ze specjalizacją w Angularze i .NET, tworzący nowoczesne i skalowalne aplikacje webowe. Pasjonat Generatywnego AI i budowania agenów w Pythonie.",
+      "skills": [".NET", "Angular", "React", "TypeScript", "Python", "Pydantic", "Langchain", "PostgreSQL"],
+      "avatar": "/shared/assets/avatars/mikolaj.jpg",
+      "portfolioUrl": "https://mikolaj.patoekipa.pl",
       "social": {
-        "github": "https://github.com/michal-kowalski",
-        "linkedin": "https://linkedin.com/in/michal-kowalski"
+        "github": "https://github.com/mozdowski",
+        "linkedin": "https://linkedin.com/in/mikolaj-ozdowski"
       }
     },
     {
