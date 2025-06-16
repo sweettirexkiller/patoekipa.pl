@@ -2,18 +2,14 @@
 const nextConfig = {
   /* config options here */
   
-  // Enable static file serving from shared directory
-  async rewrites() {
-    return [
-      {
-        source: '/shared/:path*',
-        destination: '/../shared/:path*',
-      },
-    ];
-  },
+  // Enable static export for Azure Static Web Apps
+  output: 'export',
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
   
   // Configure image domains if needed
   images: {
+    unoptimized: true, // Required for static export
     remotePatterns: [
       // Add any external image domains here if needed
     ],
