@@ -32,7 +32,12 @@ jobs:
       - name: Install dependencies
         run: |
           cd nextjs
-          npm ci
+          # Clear npm cache to avoid issues with native binaries
+          npm cache clean --force
+          # Install dependencies (use install instead of ci for better native binary handling)
+          npm install
+          # Rebuild native dependencies to ensure they're built for the correct platform
+          npm rebuild
       
       - name: Build Next.js app
         run: |

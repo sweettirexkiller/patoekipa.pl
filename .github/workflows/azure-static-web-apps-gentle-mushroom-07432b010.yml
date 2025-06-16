@@ -19,6 +19,29 @@ jobs:
         with:
           submodules: true
           lfs: false
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: nextjs/package-lock.json
+      
+      - name: Install dependencies
+        run: |
+          cd nextjs
+          # Clear npm cache to avoid issues with native binaries
+          npm cache clean --force
+          # Install dependencies (use install instead of ci for better native binary handling)
+          npm install
+          # Rebuild native dependencies to ensure they're built for the correct platform
+          npm rebuild
+      
+      - name: Build Next.js app
+        run: |
+          cd nextjs
+          npm run build
+      
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -44,3 +67,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GENTLE_MUSHROOM_07432B010 }}
           action: "close"
+          app_location: "/nextjs"
