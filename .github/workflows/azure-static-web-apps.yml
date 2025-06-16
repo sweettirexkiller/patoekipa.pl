@@ -27,6 +27,12 @@ jobs:
         with:
           node-version: '18'
       
+      - name: Sync shared assets
+        run: |
+          cd nextjs
+          mkdir -p public/shared/assets
+          cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true
+      
       - name: Install dependencies
         run: |
           cd nextjs

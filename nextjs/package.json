@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
