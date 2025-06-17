@@ -80,7 +80,7 @@ export default function ChatWidget() {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
+    <div className="fixed bottom-4 right-20 z-50 sm:bottom-6 sm:right-24">
       {/* Chat Button */}
       {!isOpen && (
         <button
