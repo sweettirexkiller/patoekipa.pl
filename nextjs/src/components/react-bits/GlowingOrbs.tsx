@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo } from 'react'
 
 interface GlowingOrbsProps {
   count?: number
@@ -9,15 +9,7 @@ interface GlowingOrbsProps {
 }
 
 export function GlowingOrbs({ count = 8, className = '' }: GlowingOrbsProps) {
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
   const orbs = useMemo(() => {
-    if (!isMounted) return []
-    
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -33,11 +25,7 @@ export function GlowingOrbs({ count = 8, className = '' }: GlowingOrbsProps) {
       duration: 8 + Math.random() * 12,
       delay: Math.random() * 4,
     }))
-  }, [count, isMounted])
-
-  if (!isMounted) {
-    return <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`} />
-  }
+  }, [count])
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
