@@ -16,55 +16,55 @@ interface Testimonial {
 const testimonials: Testimonial[] = [
   {
     id: '1',
-    name: 'Anna Kowalska',
+    name: 'Jan Fikcyjny',
     role: 'CEO',
-    company: 'TechStart Sp. z o.o.',
-    content: 'Patoekipa dostarczyła nam niesamowitą aplikację mobilną. Ich profesjonalizm i kreatywność przeszły nasze najśmielsze oczekiwania. Polecam każdemu!',
+    company: 'FakeCompany Ltd.',
+    content: 'Patoekipa dostarczyła nam rewolucyjną platformę e-commerce. Ich innowacyjne podejście i doskonała komunikacja sprawiły, że projekt przebiegł bez problemów. Wzrost sprzedaży o 300% mówi sam za siebie!',
     rating: 5,
     avatar: '👩‍💼'
   },
   {
     id: '2',
-    name: 'Marcin Nowak',
+    name: 'Anna Przykładowa',
     role: 'CTO',
-    company: 'InnovateLab',
-    content: 'Współpraca z zespołem była płynna i efektywna. Otrzymaliśmy dokładnie to, czego potrzebowaliśmy - nowoczesną platformę webową o wysokiej wydajności.',
+    company: 'DummyCorp Industries',
+    content: 'Zespół Patoekipa stworzył dla nas zaawansowany system AI do analizy danych. Jakość kodu, dokumentacja i wsparcie przerosły nasze oczekiwania. To partnerzy, na których można polegać!',
     rating: 5,
     avatar: '👨‍💻'
   },
   {
     id: '3',
-    name: 'Katarzyna Wiśniewska',
+    name: 'Marek Testowy',
     role: 'Product Manager',
-    company: 'DigitalFlow',
-    content: 'Ich znajomość najnowszych technologii i umiejętność rozwiązywania problemów sprawiły, że nasz projekt został ukończony przed terminem.',
+    company: 'FictionalTech Solutions',
+    content: 'Aplikacja mobilna stworzona przez Patoekipę zdobyła już ponad milion użytkowników. Ich wiedza techniczna i kreatywność w UX/UI design sprawiają, że każdy projekt to prawdziwy sukces.',
     rating: 5,
     avatar: '👩‍🚀'
   },
   {
     id: '4',
-    name: 'Tomasz Zieliński',
+    name: 'Katarzyna Przykład',
     role: 'Founder',
-    company: 'StartupHub',
-    content: 'Patoekipa nie tylko zrealizowała nasze wymagania, ale także zaproponowała innowacyjne rozwiązania, które znacznie poprawiły funkcjonalność naszego produktu.',
+    company: 'MockStartup Inc.',
+    content: 'Dzięki Patoekipie udało nam się zdobyć rundę finansowania Series A. Ich MVP było na tyle imponujące, że inwestorzy od razu uwierzyli w naszą wizję. Profesjonalizm na najwyższym poziomie!',
     rating: 5,
     avatar: '🚀'
   },
   {
     id: '5',
-    name: 'Magdalena Lewandowska',
+    name: 'Piotr Demoński',
     role: 'Marketing Director',
-    company: 'BrandForce',
-    content: 'Profesjonalne podejście, terminowość i wysoka jakość kodu. To zespół, na którym można polegać w każdym projekcie.',
+    company: 'PlaceholderBrand Co.',
+    content: 'System CRM stworzony przez Patoekipę zwiększył naszą efektywność o 250%. Automatyzacja procesów i intuicyjny interfejs sprawiają, że praca z nim to czysta przyjemność. Rewelacyjny zespół!',
     rating: 5,
     avatar: '💼'
   },
   {
     id: '6',
-    name: 'Paweł Dąbrowski',
+    name: 'Ewa Wzorcowa',
     role: 'Tech Lead',
-    company: 'CloudSystems',
-    content: 'Ich ekspertyza w zakresie architektury systemów i nowoczesnych frameworków pomogła nam zbudować skalowalną platformę enterprise.',
+    company: 'SampleSystems Corp',
+    content: 'Mikroserwisy zaprojektowane przez Patoekipę obsługują obecnie 10 milionów requestów dziennie. Ich architektura jest skalowalna, bezpieczna i niezawodna. To prawdziwi mistrzowie swojego fachu!',
     rating: 5,
     avatar: '⚡'
   }

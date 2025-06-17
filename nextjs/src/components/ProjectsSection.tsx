@@ -18,27 +18,27 @@ interface Project {
 const workProjects: Project[] = [
   {
     image: '/shared/assets/projects/w01.png',
-    title: 'English Brain Craft',
-    subtitle: 'This is an English learning app for students to learn English through various methods.',
-    androidLink: 'https://play.google.com/store/apps/details?id=kr.co.evolcano.donotstudy',
-    iosLink: 'https://apps.apple.com/kr/app/%EC%98%81%EC%96%B4%EB%A8%B8%EB%A6%AC-%EA%B3%B5%EC%9E%91%EC%86%8C/id1507102714',
-    tags: ['Flutter', 'Education', 'Mobile'],
+    title: 'FlexiFlow CRM',
+    subtitle: 'Nowoczesny system CRM dla małych i średnich przedsiębiorstw z zaawansowaną automatyzacją procesów sprzedażowych.',
+    webLink: '#',
+    tags: ['React', 'Node.js', 'PostgreSQL'],
     featured: true
   },
   {
     image: '/shared/assets/projects/w02.png',
-    title: 'Online Shop Web App',
-    subtitle: 'This is a responsive online shop web application for car engine oil.',
-    webLink: 'https://www.elo.best',
-    tags: ['React', 'E-commerce', 'Web'],
+    title: 'EcoTrack Mobile',
+    subtitle: 'Aplikacja mobilna do monitorowania śladu węglowego dla firm świadomych ekologicznie.',
+    androidLink: '#',
+    iosLink: '#',
+    tags: ['Flutter', 'Firebase', 'Analytics'],
     featured: true
   },
   {
     image: '/shared/assets/projects/w03.jpeg',
-    title: 'Advertisement Management System',
-    subtitle: 'This is an Advertisement Management System to buy, sell, and manage advertisement.',
-    webLink: 'https://www.externally.unavailable.project',
-    tags: ['Vue.js', 'Management', 'Web'],
+    title: 'SmartInventory Pro',
+    subtitle: 'Zaawansowany system zarządzania magazynem z AI do przewidywania popytu i optymalizacji dostaw.',
+    webLink: '#',
+    tags: ['Vue.js', 'Python', 'AI/ML'],
     featured: false
   },
 ]
@@ -46,54 +46,54 @@ const workProjects: Project[] = [
 const hobbyProjects: Project[] = [
   {
     image: '/shared/assets/projects/1.png',
-    title: 'English Learning App',
-    subtitle: 'This is a comprehensive English learning app for practicing and competing with each other.',
-    androidLink: 'https://play.google.com/store/apps/details?id=com.shohatech.eduza',
+    title: 'CodeQuest Academy',
+    subtitle: 'Interaktywna platforma do nauki programowania z gamifikacją i wyzwaniami dla początkujących.',
+    androidLink: '#',
     tags: ['Flutter', 'Education', 'Gamification'],
     featured: false
   },
   {
     image: '/shared/assets/projects/02.png',
-    title: 'English Dictionary App',
-    subtitle: 'This is a dictionary application for English learners to easily look up word definitions.',
-    androidLink: 'https://play.google.com/store/apps/details?id=com.shohatech.eduza_eng_dictionary',
-    iosLink: 'https://apps.apple.com/us/app/eduza-english-dictionary/id6443770339',
-    tags: ['Flutter', 'Dictionary', 'Offline'],
+    title: 'MindPalace Notes',
+    subtitle: 'Aplikacja do tworzenia map myśli i organizacji wiedzy z wykorzystaniem technik mnemonicznych.',
+    androidLink: '#',
+    iosLink: '#',
+    tags: ['React Native', 'Productivity', 'AI'],
     featured: false
   },
   {
     image: '/shared/assets/projects/03.png',
-    title: 'Pocket Dictionary',
-    subtitle: 'This is a word memorising app to save and play your own words as quizes',
-    androidLink: 'https://play.google.com/store/apps/details?id=com.shohruhak.eng_pocket_dictionary',
-    iosLink: 'https://apps.apple.com/tr/app/pocket-dictionary-1/id6447465115',
-    tags: ['Flutter', 'Memory', 'Quiz'],
+    title: 'FitTracker Pro',
+    subtitle: 'Kompleksowa aplikacja fitness z personalizowanymi planami treningowymi i monitoringiem postępów.',
+    androidLink: '#',
+    iosLink: '#',
+    tags: ['Flutter', 'Health', 'Analytics'],
     featured: false
   },
   {
     image: '/shared/assets/projects/04.png',
-    title: 'Tasbeeh Counter',
-    subtitle: 'This is a simple dzikr counter app for muslims with persistent storage',
-    androidLink: 'https://play.google.com/store/apps/details?id=com.shohatech.tasbeeh',
-    tags: ['Flutter', 'Spiritual', 'Counter'],
+    title: 'BudgetWise',
+    subtitle: 'Inteligentna aplikacja do zarządzania budżetem domowym z analizą wydatków i prognozami.',
+    androidLink: '#',
+    tags: ['React Native', 'Finance', 'AI'],
     featured: false
   },
   {
     image: '/shared/assets/projects/05.png',
-    title: 'Todo App',
-    subtitle: 'This is a simple task management app with persistent storage',
-    androidLink: 'https://play.google.com/store/apps/details?id=com.shohatech.todo',
-    iosLink: 'https://apps.apple.com/us/app/eduza-todo/id6443970333',
-    tags: ['Flutter', 'Productivity', 'Tasks'],
+    title: 'TaskMaster 3000',
+    subtitle: 'Zaawansowany menedżer zadań z metodologią GTD i integracją z popularnymi narzędziami produktywności.',
+    androidLink: '#',
+    iosLink: '#',
+    tags: ['Flutter', 'Productivity', 'Cloud'],
     featured: false
   },
   {
     image: '/shared/assets/projects/06.png',
-    title: 'NotePad App',
-    subtitle: 'This is a note taking app for MacOS and Android',
-    androidLink: 'https://play.google.com/store/apps/details?id=com.shohatech.notepad',
-    iosLink: 'https://apps.apple.com/us/app/eduza-notepad/id6443973859',
-    tags: ['Flutter', 'Notes', 'Cross-platform'],
+    title: 'RecipeVault',
+    subtitle: 'Cyfrowa książka kucharska z AI do sugerowania przepisów na podstawie dostępnych składników.',
+    androidLink: '#',
+    iosLink: '#',
+    tags: ['React Native', 'AI', 'Lifestyle'],
     featured: false
   },
 ]
