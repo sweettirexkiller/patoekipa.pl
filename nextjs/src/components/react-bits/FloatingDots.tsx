@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 
 interface FloatingDotsProps {
   count?: number
@@ -16,7 +16,15 @@ export function FloatingDots({
   dotSize = 4,
   colors = ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b']
 }: FloatingDotsProps) {
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
   const dots = useMemo(() => {
+    if (!isMounted) return []
+    
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -26,7 +34,11 @@ export function FloatingDots({
       delay: Math.random() * 2,
       scale: 0.5 + Math.random() * 0.5,
     }))
-  }, [count, colors])
+  }, [count, colors, isMounted])
+
+  if (!isMounted) {
+    return <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`} />
+  }
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
