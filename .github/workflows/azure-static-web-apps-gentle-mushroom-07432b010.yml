@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      
+          
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -36,12 +36,14 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
           api_location: "" # Api source code path - Next.js handles API routes
-          output_location: "" # Let Azure auto-detect Next.js build output
+          output_location: ".next" # Explicitly specify Next.js build output
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           NODE_ENV: production
+          # Disable problematic features that might cause issues
+          NEXT_TELEMETRY_DISABLED: 1
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
