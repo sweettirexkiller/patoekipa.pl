@@ -53,7 +53,7 @@ jobs:
           app_location: "/nextjs" # App source code path
           api_location: "" # Api source code path - Next.js handles API routes
           output_location: "" # Let Azure handle Next.js hybrid deployment automatically
-          app_build_command: "npm run build" # Explicit build command
+          app_build_command: "npm install && npm run build" # Install deps and build
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime

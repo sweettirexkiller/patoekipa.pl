@@ -7,7 +7,8 @@
     "prebuild": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -26,7 +27,10 @@
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "source-map-js": "^1.2.1",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -34,13 +38,10 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-syntax-highlighter": "^15.5.13",
-    "autoprefixer": "^10.4.21",
     "cssnano": "^7.0.7",
     "eslint": "^9",
     "eslint-config-next": "^14.2.15",
     "lightningcss": "^1.30.1",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.17",
     "typescript": "^5"
   }
 }
