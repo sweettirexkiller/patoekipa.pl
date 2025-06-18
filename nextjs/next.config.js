@@ -23,6 +23,17 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+
+  // Webpack configuration for better module resolution
+  webpack: (config, { isServer }) => {
+    // Ensure proper module resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+    
+    return config;
+  },
 };
 
 module.exports = nextConfig; 

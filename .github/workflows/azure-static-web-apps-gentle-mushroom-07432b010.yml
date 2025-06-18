@@ -36,6 +36,8 @@ jobs:
           cd nextjs
           # Clear npm cache to avoid issues with native binaries
           npm cache clean --force
+          # Remove any existing node_modules to ensure clean install
+          rm -rf node_modules package-lock.json
           # Install dependencies (use install instead of ci for better native binary handling)
           npm install
           # Rebuild native dependencies to ensure they're built for the correct platform
@@ -53,7 +55,7 @@ jobs:
           app_location: "/nextjs" # App source code path
           api_location: "" # Api source code path - Next.js handles API routes
           output_location: "" # Let Azure handle Next.js hybrid deployment automatically
-          app_build_command: "npm install && npm run build" # Install deps and build
+          app_build_command: "npm ci && npm run build" # Install deps and build
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime
