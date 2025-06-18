@@ -333,4 +333,16 @@ Bądź konkretny i merytoryczny, ale zachowaj przyjazny ton. Jeśli nie znasz od
       { status: 500 }
     )
   }
+}
+
+// Handle CORS preflight requests
+export async function OPTIONS(req: NextRequest) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
 } 
