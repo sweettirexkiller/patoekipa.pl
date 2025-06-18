@@ -72,4 +72,3 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GENTLE_MUSHROOM_07432B010 }}
           action: "close"
           app_location: "/nextjs"
-          api_location: "/api"
