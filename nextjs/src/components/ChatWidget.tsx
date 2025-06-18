@@ -130,7 +130,8 @@ export default function ChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const streamingContainerRef = useRef<HTMLDivElement>(null);
+  const [isStreaming, setIsStreaming] = useState(false);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -197,23 +198,18 @@ export default function ChatWidget() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Create streaming message
-      const streamingMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: '',
-        isUser: false,
-        timestamp: new Date(),
-        isStreaming: true,
-      };
-
-      setMessages(prev => [...prev, streamingMessage]);
       setIsTyping(false);
+      setIsStreaming(true);
+
+      // Small delay to ensure streaming container is rendered
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
-      let accumulatedText = '';
 
       if (reader) {
+        let accumulatedText = '';
+        
         try {
           while (true) {
             const { done, value } = await reader.read();
@@ -227,21 +223,15 @@ export default function ChatWidget() {
                 try {
                   const data = JSON.parse(line.slice(6));
                   if (data.content) {
-                    // Accumulate content to reduce re-renders
                     accumulatedText += data.content;
                     
-                    // Throttle updates to prevent flickering (update every 50ms max)
-                    if (!updateTimeoutRef.current) {
-                      updateTimeoutRef.current = setTimeout(() => {
-                        setMessages(prev =>
-                          prev.map(msg =>
-                            msg.id === streamingMessage.id
-                              ? { ...msg, text: accumulatedText }
-                              : msg
-                          )
-                        );
-                        updateTimeoutRef.current = null;
-                      }, 50);
+                    // Update DOM directly if container exists
+                    if (streamingContainerRef.current) {
+                      const textElement = streamingContainerRef.current.querySelector('.streaming-text-content');
+                      if (textElement) {
+                        textElement.textContent = accumulatedText;
+                        scrollToBottom();
+                      }
                     }
                   }
                 } catch (parseError) {
@@ -251,20 +241,14 @@ export default function ChatWidget() {
             }
           }
         } finally {
-          // Clear any pending timeout
-          if (updateTimeoutRef.current) {
-            clearTimeout(updateTimeoutRef.current);
-            updateTimeoutRef.current = null;
-          }
-          
-          // Final update with complete text and mark streaming as complete
-          setMessages(prev =>
-            prev.map(msg =>
-              msg.id === streamingMessage.id
-                ? { ...msg, text: accumulatedText, isStreaming: false }
-                : msg
-            )
-          );
+          // Add final message to messages array
+          setMessages(prev => [...prev, {
+            id: Date.now().toString(),
+            text: accumulatedText,
+            isUser: false,
+            timestamp: new Date(),
+          }]);
+          setIsStreaming(false);
         }
       }
     } catch (error: any) {
@@ -306,26 +290,7 @@ export default function ChatWidget() {
     </div>
   );
 
-  const StreamingIndicator = ({ message }: { message: Message }) => (
-    <div className="flex justify-start mb-3 animate-message-slide-in">
-      <div className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-md px-4 py-3 max-w-xs shadow-sm relative">
-        <div className="whitespace-pre-wrap leading-relaxed">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={MarkdownComponents}
-          >
-            {message.text}
-          </ReactMarkdown>
-          {message.isStreaming && (
-            <span className="inline-block w-2 h-5 bg-blue-500 ml-1 animate-pulse"></span>
-          )}
-        </div>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          {formatTime(message.timestamp)}
-        </p>
-      </div>
-    </div>
-  );
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
@@ -364,41 +329,55 @@ export default function ChatWidget() {
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-gray-900">
             {messages.map((message) => (
               <div key={message.id}>
-                {message.isStreaming ? (
-                  <StreamingIndicator message={message} />
-                ) : (
-                  <div
-                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} animate-message-slide-in`}
-                  >
-                    {message.isUser ? (
-                      <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl rounded-br-md px-4 py-3 max-w-xs shadow-sm chat-message">
-                        <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
-                        <p className="text-xs text-blue-100 mt-2">
-                          {formatTime(message.timestamp)}
-                        </p>
+                <div
+                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} animate-message-slide-in`}
+                >
+                  {message.isUser ? (
+                    <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-2xl rounded-br-md px-4 py-3 max-w-xs shadow-sm chat-message">
+                      <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
+                      <p className="text-xs text-blue-100 mt-2">
+                        {formatTime(message.timestamp)}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-md px-4 py-3 max-w-xs shadow-sm border border-gray-200 dark:border-gray-600 chat-message">
+                      <div className="whitespace-pre-wrap leading-relaxed">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={MarkdownComponents}
+                        >
+                          {message.text}
+                        </ReactMarkdown>
                       </div>
-                    ) : (
-                      <div className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-md px-4 py-3 max-w-xs shadow-sm border border-gray-200 dark:border-gray-600 chat-message">
-                        <div className="whitespace-pre-wrap leading-relaxed">
-                          <ReactMarkdown
-                            remarkPlugins={[remarkGfm]}
-                            components={MarkdownComponents}
-                          >
-                            {message.text}
-                          </ReactMarkdown>
-                        </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                          {formatTime(message.timestamp)}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        {formatTime(message.timestamp)}
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
             
             {/* Show typing indicator when AI is thinking (before streaming starts) */}
             {isTyping && <TypingIndicator />}
+            
+            {/* Streaming message container - completely separate from React state */}
+            {isStreaming && (
+              <div className="flex justify-start animate-message-slide-in">
+                <div 
+                  ref={streamingContainerRef}
+                  className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-2xl rounded-bl-md px-4 py-3 max-w-xs shadow-sm relative"
+                >
+                  <div className="whitespace-pre-wrap leading-relaxed">
+                    <span className="streaming-text-content"></span>
+                    <span className="inline-block w-0.5 h-5 bg-blue-500 ml-1 animate-pulse opacity-75"></span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    {formatTime(new Date())}
+                  </p>
+                </div>
+              </div>
+            )}
             
             <div ref={messagesEndRef} />
           </div>
