@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 interface FloatingDotsProps {
   count?: number
@@ -10,13 +10,32 @@ interface FloatingDotsProps {
   colors?: string[]
 }
 
+interface Dot {
+  id: number
+  x: number
+  y: number
+  color: string
+  duration: number
+  delay: number
+  scale: number
+}
+
 export function FloatingDots({ 
   count = 50, 
   className = '',
   dotSize = 4,
   colors = ['#3b82f6', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b']
 }: FloatingDotsProps) {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Generate dots with stable seed to prevent hydration mismatch
   const dots = useMemo(() => {
+    if (!isClient) return []
+    
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -26,11 +45,12 @@ export function FloatingDots({
       delay: Math.random() * 2,
       scale: 0.5 + Math.random() * 0.5,
     }))
-  }, [count, colors])
+  }, [isClient, count])
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
-      {dots.map((dot) => (
+      {/* Show dots only after client hydration */}
+      {isClient && dots.map((dot) => (
         <motion.div
           key={dot.id}
           className="absolute rounded-full opacity-60"

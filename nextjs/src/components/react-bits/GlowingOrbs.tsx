@@ -1,15 +1,34 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 interface GlowingOrbsProps {
   count?: number
   className?: string
 }
 
+interface Orb {
+  id: number
+  x: number
+  y: number
+  size: number
+  color: string
+  duration: number
+  delay: number
+}
+
 export function GlowingOrbs({ count = 8, className = '' }: GlowingOrbsProps) {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Generate orbs with stable seed to prevent hydration mismatch
   const orbs = useMemo(() => {
+    if (!isClient) return []
+    
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -25,11 +44,12 @@ export function GlowingOrbs({ count = 8, className = '' }: GlowingOrbsProps) {
       duration: 8 + Math.random() * 12,
       delay: Math.random() * 4,
     }))
-  }, [count])
+  }, [isClient, count])
 
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>
-      {orbs.map((orb) => (
+      {/* Show orbs only after client hydration */}
+      {isClient && orbs.map((orb) => (
         <motion.div
           key={orb.id}
           className="absolute rounded-full blur-md"

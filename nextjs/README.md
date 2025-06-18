@@ -14,6 +14,10 @@ Modern web application version of the Patoekipa portfolio built with Next.js, Re
 # Install dependencies
 npm install
 
+# Set up environment variables
+cp env.example .env.local
+# Edit .env.local and add your OpenAI API key
+
 # Run development server
 npm run dev
 
@@ -26,6 +30,16 @@ npm start
 # Run linting
 npm run lint
 ```
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory and add your OpenAI API key:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Get your OpenAI API key from [OpenAI Platform](https://platform.openai.com/api-keys).
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -83,6 +97,9 @@ import Image from 'next/image'
 - ✅ ESLint configuration
 - ✅ Responsive design
 - ✅ SEO optimization
+- ✅ AI-powered chat widget with OpenAI integration
+- ✅ Real-time streaming responses
+- ✅ Professional AI assistant for Patoekipa services
 
 ## 📦 Deployment
 
