@@ -3,7 +3,7 @@ const nextConfig = {
   /* config options here */
   
   // For Azure Static Web Apps with API routes - hybrid mode
-  trailingSlash: true,
+  trailingSlash: false,
   
   // Configure image domains if needed
   images: {
@@ -13,11 +13,17 @@ const nextConfig = {
     ],
   },
 
-  // Disable static export due to API routes and AI functionality
-  // output: 'export',
+  // Enable standalone output for Azure SWA (recommended for hybrid apps)
+  output: 'standalone',
   
   // Optimize for Azure Static Web Apps
   poweredByHeader: false,
+  
+  // Azure SWA specific optimizations
+  experimental: {
+    // Ensure proper handling of API routes in Azure SWA
+    serverComponentsExternalPackages: [],
+  },
   
   // Compiler options
   compiler: {

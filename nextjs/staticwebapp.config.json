@@ -2,6 +2,7 @@
   "platform": {
     "apiRuntime": "node:18"
   },
+  "trailingSlash": "auto",
   "routes": [
     {
       "route": "/api/*",
@@ -23,7 +24,8 @@
       "/_next/image*",
       "/favicon.ico",
       "/robots.txt",
-      "/sitemap.xml"
+      "/sitemap.xml",
+      "/.swa/*"
     ]
   },
   "mimeTypes": {
