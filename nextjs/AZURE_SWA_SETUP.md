@@ -1,164 +1,190 @@
-# Azure Static Web Apps Setup - With Next.js API Routes
+# Azure Static Web Apps Setup - Next.js with AI Integration
 
 ## Overview
-This project is configured for Azure Static Web Apps (SWA) with Next.js API routes support. The chat widget uses **real OpenAI integration** through server-side API routes.
+This project is configured for Azure Static Web Apps (SWA) with Next.js API routes and real OpenAI integration. The configuration follows the hybrid architecture pattern that allows static frontend assets with server-side API functionality.
 
-## Configuration Changes
+## Key Configuration Changes
 
-### Next.js Configuration (`next.config.js`)
-- **Output mode**: Default (not export) - Enables API routes
-- **Trailing slash**: Enabled for better Azure SWA compatibility
-- **Images**: Standard configuration
+### 1. **Azure SWA Platform Configuration** (`staticwebapp.config.json`)
 
-### Chat Widget Implementation
-The chat widget (`src/components/ChatWidget.tsx`) uses:
-- **Real API integration** - Connects to `/api/chat` endpoint
-- **OpenAI streaming** - Real-time AI responses with GPT-4o-mini
-- **Security features** - Comprehensive prompt injection protection
-- **Full Patoekipa knowledge** - Extensive system prompt with team info
+**Critical Addition**: Node.js 18 runtime support for AI processing:
 
-### Azure SWA Workflow (`.github/workflows/`)
-- **Build output**: Empty (Next.js handles build detection)
-- **API support**: Next.js API routes enabled
-- **Skip API build**: True (using Next.js API routes)
-
-## API Features
-
-### Real OpenAI Integration
-- **Model**: GPT-4o-mini for fast, intelligent responses
-- **Streaming**: Real-time response generation
-- **Security**: Multi-layer prompt injection protection
-- **Knowledge**: Comprehensive Patoekipa team, project, and service information
-
-### Security Features
-1. **Direct Instruction Detection**: Prevents prompt manipulation
-2. **Role-Playing Prevention**: Blocks attempts to change AI behavior
-3. **Jailbreak Protection**: Detects and blocks bypass attempts
-4. **Encoding Bypass Prevention**: Prevents encoded instruction injection
-5. **Topic Relevance**: Ensures conversations stay Patoekipa-focused
-
-### Response Categories
-1. **Team Information** - Details about all 4 team members
-2. **Project Portfolio** - Commercial and hobby projects
-3. **Services** - Complete IT service offerings
-4. **Technologies** - Full technology stack
-5. **Contact** - How to reach and work with the team
-
-## Environment Variables
-
-### Required for Production
-- `OPENAI_API_KEY` - Your OpenAI API key (starts with `sk-`)
-
-### Demo Mode
-Without a valid API key, the system returns:
 ```json
 {
-  "error": "Demo mode - brak klucza API. Skontaktuj się z zespołem Patoekipa dla pełnej funkcjonalności.",
-  "demo": true
+  "platform": {
+    "apiRuntime": "node:18"
+  },
+  "routes": [
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/_next/static/*",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    }
+  ]
 }
 ```
 
-## Deployment
+**Why This Matters**: Without `"apiRuntime": "node:18"`, Azure SWA cannot execute Next.js API routes that require Node.js runtime for AI processing.
 
-### Azure SWA Configuration
-Set environment variables in Azure Portal:
-1. Go to your Static Web App in Azure Portal
-2. Navigate to Configuration → Environment variables
-3. Add `OPENAI_API_KEY` with your OpenAI API key
+### 2. **Next.js Configuration** (`next.config.js`)
 
-### Build Process
-1. `npm run build` - Creates Next.js build with API routes
-2. Azure SWA automatically detects and deploys the application
-3. API routes are available at `/api/*` endpoints
-4. Real-time streaming responses work automatically
+**Hybrid Mode Configuration**:
+```javascript
+const nextConfig = {
+  // For Azure Static Web Apps with API routes - hybrid mode
+  trailingSlash: true,
+  
+  images: {
+    unoptimized: true, // Optimize for static hosting
+  },
 
-## Testing
-
-### Local Development
-```bash
-# Set up environment
-cp env.example .env.local
-# Add your OPENAI_API_KEY to .env.local
-
-# Run development server
-npm run dev
-
-# Test the chat widget at http://localhost:3000
+  // Disable static export due to API routes and AI functionality
+  // output: 'export',  // <-- This MUST be commented out or removed
+  
+  // Optimize for Azure Static Web Apps
+  poweredByHeader: false,
+  
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+};
 ```
 
-### Production Testing
+**Critical**: `output: 'export'` **MUST NOT** be used when you have API routes. This was the main cause of build failures.
+
+### 3. **GitHub Actions Workflow Configuration**
+
+**Proper Build Configuration**:
+```yaml
+- name: Build And Deploy
+  with:
+    app_location: "/nextjs"
+    api_location: "" # Next.js handles API routes internally
+    output_location: "" # Let Azure handle Next.js hybrid deployment automatically
+    app_build_command: "npm run build" # Explicit build command
+  env:
+    # Environment variables for build and runtime
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    NODE_ENV: production
+```
+
+**Key Points**:
+- `output_location: ""` - Let Azure auto-detect Next.js build output
+- `app_build_command: "npm run build"` - Explicit build command prevents ambiguity
+- Environment variables passed to both build and runtime
+
+## Architecture Analysis (Based on Working Example)
+
+### **Hybrid Deployment Model**
+```
+┌─ Static Assets ─┐    ┌─ API Routes (Node.js) ─┐
+│ HTML, CSS, JS   │    │ /api/chat              │
+│ Images, Fonts   │    │ OpenAI Integration     │
+│ _next/static/*  │    │ Server-side Logic      │
+└─ Served from CDN ┘   └─ Runs on Node.js 18   ┘
+```
+
+### **Request Flow**
+1. **Static Requests**: `/_next/static/*`, images → Served from CDN
+2. **API Requests**: `/api/chat` → Routed to Node.js runtime
+3. **Page Requests**: `/`, `/about` → Static HTML with hydration
+
+### **Build Process**
+1. **Next.js Build**: Creates both static assets and API functions
+2. **Azure Detection**: Automatically detects `.next` folder structure
+3. **Deployment**: Static assets to CDN, API routes to Node.js runtime
+
+## Environment Variables Setup
+
+### **Required Secrets in GitHub Repository**:
 ```bash
-# Build for production
-npm run build
+OPENAI_API_KEY=sk-proj-...                    # OpenAI API authentication
+AZURE_STATIC_WEB_APPS_API_TOKEN_*=...         # Azure deployment token
+```
 
-# Start production server
-npm start
+### **Local Development** (`.env.local`):
+```bash
+OPENAI_API_KEY=sk-proj-...
+NODE_ENV=development
+```
 
-# Test API endpoint directly
-curl -X POST http://localhost:3000/api/chat \
+## API Route Implementation
+
+### **Endpoint Structure** (`src/app/api/chat/route.ts`):
+```typescript
+export async function POST(req: NextRequest) {
+  // 1. Input validation and security checks
+  // 2. OpenAI API integration with streaming
+  // 3. Error handling and response formatting
+  // 4. Conversation state management
+}
+```
+
+### **Frontend Integration** (`ChatWidget.tsx`):
+```typescript
+const response = await fetch('/api/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ messages: [...] })
+});
+```
+
+## Troubleshooting Common Issues
+
+### **"Unknown exception has occurred"**
+**Cause**: Missing `"apiRuntime": "node:18"` in `staticwebapp.config.json`
+**Solution**: Add platform configuration for Node.js runtime
+
+### **"405 Method Not Allowed"**
+**Cause**: `output: 'export'` in `next.config.js` disables API routes
+**Solution**: Remove or comment out the export configuration
+
+### **Build Artifacts Detection Issues**
+**Cause**: Incorrect `output_location` configuration
+**Solution**: Set `output_location: ""` to let Azure auto-detect
+
+### **Environment Variable Issues**
+**Cause**: Missing environment variables in GitHub secrets or Azure configuration
+**Solution**: Verify all required secrets are set in GitHub repository settings
+
+## Deployment Verification
+
+### **Successful Build Indicators**:
+```
+Route (app)                              Size     First Load JS
+┌ ○ /                                    69.2 kB         156 kB
+├ ○ /_not-found                          877 B          88.2 kB
+└ ƒ /api/chat                            0 B                0 B    # ← API route detected
+```
+
+### **Test API Endpoint**:
+```bash
+curl -X POST https://your-app.azurestaticapps.net/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"Cześć!"}]}'
+  -d '{"messages":[{"role":"user","content":"Hello"}]}'
 ```
 
-## Example Interactions
+## Key Differences from Static Export
 
-### Greeting
-**User**: "Cześć!"
-**AI**: Detailed welcome message with conversation options
+| Aspect | Static Export | Hybrid (Our Setup) |
+|--------|---------------|-------------------|
+| **API Routes** | ❌ Not supported | ✅ Full support |
+| **Server Functions** | ❌ Disabled | ✅ Node.js runtime |
+| **Build Output** | Static files only | Static + Server functions |
+| **Deployment** | CDN only | CDN + Compute |
+| **AI Integration** | ❌ Client-side only | ✅ Server-side processing |
 
-### Team Questions
-**User**: "Kto jest w zespole?"
-**AI**: Complete information about all 4 team members with roles and technologies
+## Benefits of This Architecture
 
-### Project Questions
-**User**: "Jakie projekty realizujecie?"
-**AI**: Detailed list of commercial and hobby projects with descriptions
+✅ **Real AI Integration** - Server-side OpenAI processing  
+✅ **Security** - API keys protected on server-side  
+✅ **Performance** - Static assets from CDN, dynamic processing on-demand  
+✅ **Scalability** - Automatic scaling for both static and compute resources  
+✅ **Cost Efficiency** - Pay only for compute usage, static assets served efficiently  
 
-### Technology Questions
-**User**: "Jakich technologii używacie?"
-**AI**: Comprehensive technology stack organized by category
-
-### Contact Questions
-**User**: "Jak mogę się z wami skontaktować?"
-**AI**: All contact information and collaboration details
-
-## Troubleshooting
-
-### 405 Method Not Allowed
-- Ensure `next.config.js` does NOT have `output: 'export'`
-- Verify Azure SWA routing includes `/api/*` routes
-- Check that API route file exists at `src/app/api/chat/route.ts`
-
-### Chat Widget Not Responding
-- Check browser console for errors
-- Verify `OPENAI_API_KEY` is set in Azure SWA environment variables
-- Test API endpoint directly with curl
-
-### Build Failures
-- Ensure all dependencies are in `package.json`
-- Check TypeScript compilation errors
-- Verify Next.js configuration is valid
-
-### Streaming Issues
-- Check network tab for SSE connection
-- Verify Content-Type headers are correct
-- Ensure no proxy/firewall blocking streaming
-
-## Benefits of Real Integration
-
-✅ **Intelligent Responses** - Powered by GPT-4o-mini  
-✅ **Real-time Streaming** - Natural conversation flow  
-✅ **Security Protected** - Multi-layer prompt injection prevention  
-✅ **Comprehensive Knowledge** - Full Patoekipa information  
-✅ **Professional Quality** - Production-ready implementation  
-✅ **Scalable Architecture** - Ready for high traffic  
-
-## Future Enhancements
-
-- **Analytics**: Track conversation patterns and user interests
-- **Multilingual**: Add English language support
-- **Voice**: Integrate speech-to-text and text-to-speech
-- **Memory**: Add conversation context persistence
-- **Integration**: Connect with CRM systems for lead tracking
-
-The current implementation provides a professional, secure, and intelligent chat experience that represents the Patoekipa team effectively. 
+The configuration now matches the working pattern from your successful implementation and should resolve the Azure SWA build failures. 
