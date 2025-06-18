@@ -41,11 +41,6 @@ jobs:
           # Rebuild native dependencies to ensure they're built for the correct platform
           npm rebuild
       
-      - name: Build Next.js app
-        run: |
-          cd nextjs
-          npm run build
-      
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -57,7 +52,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
           api_location: "" # Api source code path - optional
-          output_location: "" # Built app content directory - optional (empty for Next.js)
+          output_location: "" # Built app content directory - let Azure detect
           skip_api_build: true # Skip API build since we're using Next.js API routes
           ###### End of Repository/Build Configurations ######
 

@@ -1,7 +1,7 @@
 # Azure Static Web Apps Setup - With Next.js API Routes
 
 ## Overview
-This project is configured for Azure Static Web Apps (SWA) with Next.js API routes support. The chat widget uses real OpenAI integration through server-side API routes.
+This project is configured for Azure Static Web Apps (SWA) with Next.js API routes support. The chat widget uses **real OpenAI integration** through server-side API routes.
 
 ## Configuration Changes
 
@@ -13,69 +13,68 @@ This project is configured for Azure Static Web Apps (SWA) with Next.js API rout
 ### Chat Widget Implementation
 The chat widget (`src/components/ChatWidget.tsx`) uses:
 - **Real API integration** - Connects to `/api/chat` endpoint
-- **OpenAI streaming** - Real-time AI responses
-- **Security features** - Prompt injection protection
-- **Full Patoekipa knowledge** - Comprehensive system prompt
+- **OpenAI streaming** - Real-time AI responses with GPT-4o-mini
+- **Security features** - Comprehensive prompt injection protection
+- **Full Patoekipa knowledge** - Extensive system prompt with team info
 
 ### Azure SWA Workflow (`.github/workflows/`)
-- **Build output**: Empty (Next.js handles build)
+- **Build output**: Empty (Next.js handles build detection)
 - **API support**: Next.js API routes enabled
 - **Skip API build**: True (using Next.js API routes)
 
-## Chat Widget Features
+## API Features
+
+### Real OpenAI Integration
+- **Model**: GPT-4o-mini for fast, intelligent responses
+- **Streaming**: Real-time response generation
+- **Security**: Multi-layer prompt injection protection
+- **Knowledge**: Comprehensive Patoekipa team, project, and service information
+
+### Security Features
+1. **Direct Instruction Detection**: Prevents prompt manipulation
+2. **Role-Playing Prevention**: Blocks attempts to change AI behavior
+3. **Jailbreak Protection**: Detects and blocks bypass attempts
+4. **Encoding Bypass Prevention**: Prevents encoded instruction injection
+5. **Topic Relevance**: Ensures conversations stay Patoekipa-focused
 
 ### Response Categories
-1. **Greetings** - Welcome messages
-2. **Team information** - Details about Patoekipa members
-3. **Projects** - Portfolio and project descriptions
-4. **Services** - IT services offered
-5. **Technologies** - Tech stack information
-6. **Contact** - How to reach the team
+1. **Team Information** - Details about all 4 team members
+2. **Project Portfolio** - Commercial and hobby projects
+3. **Services** - Complete IT service offerings
+4. **Technologies** - Full technology stack
+5. **Contact** - How to reach and work with the team
 
-### Example Interactions
-- "Cześć!" → Welcome message with options
-- "Kto jest w zespole?" → Team member details
-- "Jakie projekty realizujecie?" → Project portfolio
-- "Jakie technologie używacie?" → Technology stack
-- "Jak się z wami skontaktować?" → Contact information
+## Environment Variables
+
+### Required for Production
+- `OPENAI_API_KEY` - Your OpenAI API key (starts with `sk-`)
+
+### Demo Mode
+Without a valid API key, the system returns:
+```json
+{
+  "error": "Demo mode - brak klucza API. Skontaktuj się z zespołem Patoekipa dla pełnej funkcjonalności.",
+  "demo": true
+}
+```
 
 ## Deployment
 
-### Environment Variables
-**Required for full functionality:**
-- `OPENAI_API_KEY` - Your OpenAI API key (starts with `sk-`)
-
-**Without API key:**
-- Chat widget shows demo mode with mock responses
+### Azure SWA Configuration
+Set environment variables in Azure Portal:
+1. Go to your Static Web App in Azure Portal
+2. Navigate to Configuration → Environment variables
+3. Add `OPENAI_API_KEY` with your OpenAI API key
 
 ### Build Process
 1. `npm run build` - Creates Next.js build with API routes
-2. Azure SWA automatically deploys the full Next.js application
+2. Azure SWA automatically detects and deploys the application
 3. API routes are available at `/api/*` endpoints
-4. Set `OPENAI_API_KEY` in Azure SWA environment variables
+4. Real-time streaming responses work automatically
 
-## Future Enhancements
+## Testing
 
-### For Production Use
-To upgrade to real AI responses:
-1. **Upgrade to paid Azure SWA tier** - Enables Azure Functions
-2. **Add OpenAI integration** - Server-side API with real AI
-3. **Environment variables** - `OPENAI_API_KEY` configuration
-
-### Alternative Approaches
-1. **External API service** - Third-party backend
-2. **Client-side OpenAI** - Direct browser integration (not recommended for production)
-3. **Hybrid approach** - Static site + external serverless functions
-
-## Benefits of Current Setup
-- ✅ **Real AI responses** - Powered by OpenAI GPT-4o-mini
-- ✅ **Server-side security** - Prompt injection protection
-- ✅ **Streaming responses** - Real-time chat experience
-- ✅ **Azure SWA integration** - Native Next.js API routes support
-- ✅ **Comprehensive knowledge** - Full Patoekipa information
-- ✅ **Professional responses** - Context-aware AI assistant
-
-## Testing Locally
+### Local Development
 ```bash
 # Set up environment
 cp env.example .env.local
@@ -84,9 +83,82 @@ cp env.example .env.local
 # Run development server
 npm run dev
 
-# Or test production build
-npm run build
-npm start
+# Test the chat widget at http://localhost:3000
 ```
 
-The chat widget will connect to the real OpenAI API when properly configured. 
+### Production Testing
+```bash
+# Build for production
+npm run build
+
+# Start production server
+npm start
+
+# Test API endpoint directly
+curl -X POST http://localhost:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Cześć!"}]}'
+```
+
+## Example Interactions
+
+### Greeting
+**User**: "Cześć!"
+**AI**: Detailed welcome message with conversation options
+
+### Team Questions
+**User**: "Kto jest w zespole?"
+**AI**: Complete information about all 4 team members with roles and technologies
+
+### Project Questions
+**User**: "Jakie projekty realizujecie?"
+**AI**: Detailed list of commercial and hobby projects with descriptions
+
+### Technology Questions
+**User**: "Jakich technologii używacie?"
+**AI**: Comprehensive technology stack organized by category
+
+### Contact Questions
+**User**: "Jak mogę się z wami skontaktować?"
+**AI**: All contact information and collaboration details
+
+## Troubleshooting
+
+### 405 Method Not Allowed
+- Ensure `next.config.js` does NOT have `output: 'export'`
+- Verify Azure SWA routing includes `/api/*` routes
+- Check that API route file exists at `src/app/api/chat/route.ts`
+
+### Chat Widget Not Responding
+- Check browser console for errors
+- Verify `OPENAI_API_KEY` is set in Azure SWA environment variables
+- Test API endpoint directly with curl
+
+### Build Failures
+- Ensure all dependencies are in `package.json`
+- Check TypeScript compilation errors
+- Verify Next.js configuration is valid
+
+### Streaming Issues
+- Check network tab for SSE connection
+- Verify Content-Type headers are correct
+- Ensure no proxy/firewall blocking streaming
+
+## Benefits of Real Integration
+
+✅ **Intelligent Responses** - Powered by GPT-4o-mini  
+✅ **Real-time Streaming** - Natural conversation flow  
+✅ **Security Protected** - Multi-layer prompt injection prevention  
+✅ **Comprehensive Knowledge** - Full Patoekipa information  
+✅ **Professional Quality** - Production-ready implementation  
+✅ **Scalable Architecture** - Ready for high traffic  
+
+## Future Enhancements
+
+- **Analytics**: Track conversation patterns and user interests
+- **Multilingual**: Add English language support
+- **Voice**: Integrate speech-to-text and text-to-speech
+- **Memory**: Add conversation context persistence
+- **Integration**: Connect with CRM systems for lead tracking
+
+The current implementation provides a professional, secure, and intelligent chat experience that represents the Patoekipa team effectively. 

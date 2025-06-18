@@ -14,6 +14,8 @@ interface Message {
   isStreaming?: boolean;
 }
 
+
+
 // Custom components for markdown rendering
 const MarkdownComponents = {
   code({ node, inline, className, children, ...props }: any) {
