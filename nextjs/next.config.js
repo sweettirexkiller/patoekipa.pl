@@ -13,8 +13,8 @@ const nextConfig = {
     ],
   },
 
-  // Enable standalone output for Azure SWA (recommended for hybrid apps)
-  output: 'standalone',
+  // Remove standalone output for Azure SWA compatibility
+  // output: 'standalone', // This causes issues with Azure SWA
   
   // Optimize for Azure Static Web Apps
   poweredByHeader: false,

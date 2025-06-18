@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "prebuild": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true"

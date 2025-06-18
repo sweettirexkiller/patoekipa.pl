@@ -25,24 +25,6 @@ jobs:
         with:
           node-version: '18'
       
-      - name: Sync shared assets
-        run: |
-          cd nextjs
-          mkdir -p public/shared/assets
-          cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true
-      
-      - name: Install dependencies
-        run: |
-          cd nextjs
-          # Clear npm cache to avoid issues with native binaries
-          npm cache clean --force
-          # Remove any existing node_modules to ensure clean install
-          rm -rf node_modules package-lock.json
-          # Install dependencies (use install instead of ci for better native binary handling)
-          npm install
-          # Rebuild native dependencies to ensure they're built for the correct platform
-          npm rebuild
-      
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -54,9 +36,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
           api_location: "" # Api source code path - Next.js handles API routes
-          output_location: "" # Let Azure handle Next.js hybrid deployment automatically
-          app_build_command: "npm ci && npm run build" # Install deps and build
-          skip_api_build: true # Skip API build since Next.js handles it
+          output_location: "" # Let Azure auto-detect Next.js build output
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime
