@@ -255,11 +255,8 @@ Bądź konkretny i merytoryczny, ale zachowaj przyjazny ton. Jeśli nie znasz od
 
     const allMessages = [systemMessage, ...messages]
 
-    console.log('GEkkiiiii');
-    console.log(process.env.OPENAI_API_KEY);
-
     // Check if we have a real API key (starts with sk-)
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'test_key_for_development' || !process.env.OPENAI_API_KEY.startsWith('sk-')) {
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'test_key' || !process.env.OPENAI_API_KEY.startsWith('sk-')) {
       // Return a mock streaming response for testing
       const encoder = new TextEncoder()
       const mockResponse = "Dziękuję za wiadomość! 🤖\n\nJestem asystentem AI zespołu **Patoekipa**. Obecnie działam w trybie demonstracyjnym.\n\nAby w pełni korzystać z moich możliwości, zespół musi skonfigurować prawdziwy klucz API OpenAI.\n\n### Co mogę robić:\n- ✅ Odpowiadać na pytania o usługi Patoekipa\n- ✅ Pomagać w wyborze technologii\n- ✅ Udzielać porad technicznych\n- ✅ Formatować odpowiedzi w **Markdown**\n\n```javascript\n// Przykład kodu\nconsole.log('Witaj w Patoekipa!');\n```\n\nSkontaktuj się z zespołem, aby uzyskać pełną funkcjonalność! 🚀"

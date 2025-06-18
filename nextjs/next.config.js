@@ -2,7 +2,7 @@
 const nextConfig = {
   /* config options here */
   
-  // For Azure Static Web Apps with API routes, we need standard mode (not static export)
+  // For Azure Static Web Apps with API routes - use default mode
   trailingSlash: true,
   
   // Configure image domains if needed
