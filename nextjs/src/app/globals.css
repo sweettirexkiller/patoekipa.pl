@@ -203,6 +203,20 @@ body {
   transform: rotateY(180deg);
 }
 
+/* Chat Widget and BackToTop Positioning */
+.chat-widget-container {
+  /* Chat widget stays in bottom-right */
+  bottom: 1.5rem;
+  right: 1.5rem;
+}
+
+/* Move BackToTop button when chat widget is present */
+.back-to-top-button {
+  bottom: 1.5rem;
+  right: 5.5rem; /* Position to the left of chat widget */
+  transition: all 0.3s ease;
+}
+
 /* Button styles */
 .btn-primary {
   @apply bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors;

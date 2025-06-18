@@ -53,7 +53,7 @@ export function TextReveal({
       opacity: 1,
       filter: 'blur(0px)',
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         damping: 12,
         stiffness: 200,
         duration: duration,

@@ -3,11 +3,17 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { useRef, useState } from 'react'
 
-interface MagneticButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface MagneticButtonProps {
   children: React.ReactNode
   className?: string
   strength?: number
   range?: number
+  onClick?: () => void
+  disabled?: boolean
+  type?: 'button' | 'submit' | 'reset'
+  title?: string
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
 }
 
 export function MagneticButton({ 
@@ -15,7 +21,12 @@ export function MagneticButton({
   className = '',
   strength = 0.4,
   range = 80,
-  ...buttonProps
+  onClick,
+  disabled,
+  type = 'button',
+  title,
+  onMouseEnter: onMouseEnterProp,
+  onMouseLeave: onMouseLeaveProp
 }: MagneticButtonProps) {
   const ref = useRef<HTMLButtonElement>(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -48,10 +59,12 @@ export function MagneticButton({
     setIsHovered(false)
     x.set(0)
     y.set(0)
+    onMouseLeaveProp?.()
   }
 
   const handleMouseEnter = () => {
     setIsHovered(true)
+    onMouseEnterProp?.()
   }
 
   const MotionComponent = motion.button
@@ -64,7 +77,10 @@ export function MagneticButton({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
-      {...buttonProps}
+      onClick={onClick}
+      disabled={disabled}
+      type={type}
+      title={title}
       whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >

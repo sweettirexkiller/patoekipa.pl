@@ -293,7 +293,7 @@ export default function ChatWidget() {
 
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-6 right-6 z-50 chat-widget-container">
       {isOpen && (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-80 h-[500px] sm:w-96 sm:h-[600px] max-sm:fixed max-sm:inset-4 max-sm:w-auto max-sm:h-auto flex flex-col border border-gray-200 dark:border-gray-700 animate-chat-widget-slide-up">
           {/* Header */}

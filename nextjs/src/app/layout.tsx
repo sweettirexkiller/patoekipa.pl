@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ChatWidget from "@/components/ChatWidget";
+import { ChatWidgetProvider } from "@/components/ChatWidgetContext";
 
 const interSans = Inter({
   variable: "--font-inter-sans",
@@ -35,8 +36,10 @@ export default function RootLayout({
       <body
         className={`${interSans.variable} ${jetBrainsMono.variable} antialiased`}
       >
-        {children}
-        <ChatWidget />
+        <ChatWidgetProvider>
+          {children}
+          <ChatWidget />
+        </ChatWidgetProvider>
       </body>
     </html>
   );

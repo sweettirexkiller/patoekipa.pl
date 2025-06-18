@@ -37,9 +37,13 @@ export function BackToTop({
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className={`fixed bottom-8 right-8 z-50 ${className}`}
+          className={`fixed back-to-top-button z-40 ${className}`}
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
+          animate={{ 
+            opacity: 1, 
+            scale: 1, 
+            y: 0,
+          }}
           exit={{ opacity: 0, scale: 0.8, y: 20 }}
           transition={{ 
             type: "spring",
