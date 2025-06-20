@@ -5,98 +5,25 @@ import { useState, useEffect, useRef } from 'react'
 import { FloatingCard, ScrambledText, TextReveal, RotatingText } from './react-bits'
 
 interface Project {
-  image: string
+  id: string
   title: string
   subtitle: string
-  androidLink?: string
-  iosLink?: string
-  webLink?: string
-  tags?: string[]
-  featured?: boolean
+  description: string
+  image: string
+  technologies: string[]
+  category: 'commercial' | 'hobby' | 'open_source' | 'internal'
+  status: 'active' | 'completed' | 'archived' | 'in_progress' | 'planning'
+  featured: boolean
+  links: {
+    androidLink?: string
+    iosLink?: string
+    webLink?: string
+    githubLink?: string
+    demoLink?: string
+    documentationLink?: string
+  }
+  tags: string[]
 }
-
-const workProjects: Project[] = [
-  {
-    image: '/shared/assets/projects/w01.png',
-    title: 'FlexiFlow CRM',
-    subtitle: 'Nowoczesny system CRM dla małych i średnich przedsiębiorstw z zaawansowaną automatyzacją procesów sprzedażowych.',
-    webLink: '#',
-    tags: ['React', 'Node.js', 'PostgreSQL'],
-    featured: true
-  },
-  {
-    image: '/shared/assets/projects/w02.png',
-    title: 'EcoTrack Mobile',
-    subtitle: 'Aplikacja mobilna do monitorowania śladu węglowego dla firm świadomych ekologicznie.',
-    androidLink: '#',
-    iosLink: '#',
-    tags: ['Flutter', 'Firebase', 'Analytics'],
-    featured: true
-  },
-  {
-    image: '/shared/assets/projects/w03.jpeg',
-    title: 'SmartInventory Pro',
-    subtitle: 'Zaawansowany system zarządzania magazynem z AI do przewidywania popytu i optymalizacji dostaw.',
-    webLink: '#',
-    tags: ['Vue.js', 'Python', 'AI/ML'],
-    featured: false
-  },
-]
-
-const hobbyProjects: Project[] = [
-  {
-    image: '/shared/assets/projects/1.png',
-    title: 'CodeQuest Academy',
-    subtitle: 'Interaktywna platforma do nauki programowania z gamifikacją i wyzwaniami dla początkujących.',
-    androidLink: '#',
-    tags: ['Flutter', 'Education', 'Gamification'],
-    featured: false
-  },
-  {
-    image: '/shared/assets/projects/02.png',
-    title: 'MindPalace Notes',
-    subtitle: 'Aplikacja do tworzenia map myśli i organizacji wiedzy z wykorzystaniem technik mnemonicznych.',
-    androidLink: '#',
-    iosLink: '#',
-    tags: ['React Native', 'Productivity', 'AI'],
-    featured: false
-  },
-  {
-    image: '/shared/assets/projects/03.png',
-    title: 'FitTracker Pro',
-    subtitle: 'Kompleksowa aplikacja fitness z personalizowanymi planami treningowymi i monitoringiem postępów.',
-    androidLink: '#',
-    iosLink: '#',
-    tags: ['Flutter', 'Health', 'Analytics'],
-    featured: false
-  },
-  {
-    image: '/shared/assets/projects/04.png',
-    title: 'BudgetWise',
-    subtitle: 'Inteligentna aplikacja do zarządzania budżetem domowym z analizą wydatków i prognozami.',
-    androidLink: '#',
-    tags: ['React Native', 'Finance', 'AI'],
-    featured: false
-  },
-  {
-    image: '/shared/assets/projects/05.png',
-    title: 'TaskMaster 3000',
-    subtitle: 'Zaawansowany menedżer zadań z metodologią GTD i integracją z popularnymi narzędziami produktywności.',
-    androidLink: '#',
-    iosLink: '#',
-    tags: ['Flutter', 'Productivity', 'Cloud'],
-    featured: false
-  },
-  {
-    image: '/shared/assets/projects/06.png',
-    title: 'RecipeVault',
-    subtitle: 'Cyfrowa książka kucharska z AI do sugerowania przepisów na podstawie dostępnych składników.',
-    androidLink: '#',
-    iosLink: '#',
-    tags: ['React Native', 'AI', 'Lifestyle'],
-    featured: false
-  },
-]
 
 const projectCategories = [
   'Komercyjne',
@@ -122,7 +49,7 @@ function ProjectCard({ project, index, isHovered, onHover }: {
       <div className="group glass rounded-3xl overflow-hidden shadow-lg hover:shadow-xl h-full flex flex-col border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-[1.02]">
           <div className="relative h-48 overflow-hidden">
             <Image
-              src={project.image}
+              src={project.image || '/shared/assets/projects/1.png'}
               alt={project.title}
               fill
               className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -138,7 +65,7 @@ function ProjectCard({ project, index, isHovered, onHover }: {
             
             {/* Tags */}
             <div className="absolute bottom-4 left-4 flex flex-wrap gap-2">
-              {project.tags?.slice(0, 2).map((tag, tagIndex) => (
+              {project.technologies?.slice(0, 2).map((tag, tagIndex) => (
                 <span
                   key={tag}
                   className="px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-xs rounded-lg border border-white/20"
@@ -146,9 +73,9 @@ function ProjectCard({ project, index, isHovered, onHover }: {
                   {tag}
                 </span>
               ))}
-              {project.tags && project.tags.length > 2 && (
+              {project.technologies && project.technologies.length > 2 && (
                 <span className="px-2 py-1 bg-black/60 backdrop-blur-sm text-white text-xs rounded-lg border border-white/20">
-                  +{project.tags.length - 2}
+                  +{project.technologies.length - 2}
                 </span>
               )}
             </div>
@@ -172,9 +99,9 @@ function ProjectCard({ project, index, isHovered, onHover }: {
             </p>
             
             <div className="flex flex-wrap gap-3">
-              {project.androidLink && (
+              {project.links.androidLink && (
                 <a
-                  href={project.androidLink}
+                  href={project.links.androidLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -185,9 +112,9 @@ function ProjectCard({ project, index, isHovered, onHover }: {
                   Android
                 </a>
               )}
-              {project.iosLink && (
+              {project.links.iosLink && (
                 <a
-                  href={project.iosLink}
+                  href={project.links.iosLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -198,23 +125,36 @@ function ProjectCard({ project, index, isHovered, onHover }: {
                   iOS
                 </a>
               )}
-              {project.webLink && (
+              {project.links.webLink && (
                 <a
-                  href={project.webLink}
+                  href={project.links.webLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                   Web
+                </a>
+              )}
+              {project.links.githubLink && (
+                <a
+                  href={project.links.githubLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-xl hover:from-gray-800 hover:to-gray-900 transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                  </svg>
+                  GitHub
                 </a>
               )}
             </div>
           </div>
         </div>
-      </div>
+    </div>
   )
 }
 
@@ -222,6 +162,8 @@ export function ProjectsSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [activeCategory, setActiveCategory] = useState('Wszystkie')
   const [hoveredProject, setHoveredProject] = useState<string | null>(null)
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -241,14 +183,39 @@ export function ProjectsSection() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    fetchProjects()
+  }, [])
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/projects')
+      if (response.ok) {
+        const result = await response.json()
+        const projectsData = result.success ? result.data : []
+        setProjects(projectsData)
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const getFilteredProjects = () => {
     if (activeCategory === 'Wszystkie') {
-      return [...workProjects, ...hobbyProjects]
-    } else if (activeCategory === 'Komercyjne') {
-      return workProjects
-    } else {
-      return hobbyProjects
+      return projects
     }
+    
+    const categoryMap = {
+      'Komercyjne': 'commercial',
+      'Hobbystyczne': 'hobby'
+    }
+    
+    return projects.filter(project => 
+      project.category === categoryMap[activeCategory as keyof typeof categoryMap]
+    )
   }
 
   const filteredProjects = getFilteredProjects()
@@ -257,8 +224,8 @@ export function ProjectsSection() {
     <section id="projects" ref={sectionRef} className="py-24 px-6 relative">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-10 w-64 h-64 bg-gradient-to-br from-purple-400/10 to-pink-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-10 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-cyan-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 right-10 w-64 h-64 bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 left-10 w-80 h-80 bg-gradient-to-br from-purple-400/10 to-pink-600/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="container mx-auto relative z-10">
@@ -269,26 +236,26 @@ export function ProjectsSection() {
           <div className="inline-flex items-center gap-3 mb-6">
             <div className="w-12 h-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"></div>
             <span className="text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-              Nasze Realizacje
+              Nasze Projekty
             </span>
             <div className="w-12 h-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"></div>
           </div>
           
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-800 dark:text-white mb-6">
-            <TextReveal text="Nasze" delay={0.2} />
-            {' '}
+            <TextReveal text="Realizacje &" delay={0.2} />
+            <br />
             <span className="gradient-text">
               <RotatingText 
-                words={['Projekty', 'Aplikacje', 'Rozwiązania', 'Dzieła']}
-                animationType="flip"
-                interval={3000}
+                words={['Projekty', 'Innowacje', 'Rozwiązania', 'Aplikacje']}
+                animationType="bounce"
+                interval={2500}
               />
             </span>
           </h2>
           
           <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-4xl mx-auto leading-relaxed">
             <TextReveal 
-              text="Poznaj aplikacje i systemy, które stworzyliśmy dla naszych klientów i jako projekty hobbystyczne"
+              text="Poznaj nasze najlepsze realizacje - od aplikacji mobilnych po kompleksowe systemy webowe"
               delay={0.5}
             />
           </p>
@@ -298,75 +265,79 @@ export function ProjectsSection() {
         <div className={`flex justify-center mb-12 transition-all duration-1000 delay-300 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
-          <div className="glass rounded-2xl p-2 border border-white/20">
-            <div className="flex gap-2">
-              {projectCategories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                    activeCategory === category
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-white/10 dark:hover:bg-white/5'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+          <div className="flex flex-wrap gap-3 p-2 bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-2xl border border-white/20">
+            {projectCategories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`px-6 py-3 rounded-xl transition-all duration-300 font-medium text-sm ${
+                  activeCategory === category
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-white/10 dark:hover:bg-white/5'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Projects Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {filteredProjects.map((project, index) => (
-            <ProjectCard 
-              key={`${project.title}-${activeCategory}`}
-              project={project} 
-              index={index}
-              isHovered={hoveredProject === project.title}
-              onHover={(hovered) => setHoveredProject(hovered ? project.title : null)}
-            />
-          ))}
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="h-96 bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
+            ))
+          ) : filteredProjects.length > 0 ? (
+            filteredProjects.map((project, index) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                index={index}
+                isHovered={hoveredProject === project.id}
+                onHover={(hovered) => setHoveredProject(hovered ? project.id : null)}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400">
+                {activeCategory === 'Wszystkie' 
+                  ? 'Brak projektów do wyświetlenia' 
+                  : `Brak projektów w kategorii "${activeCategory}"`
+                }
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Stats Section */}
-        <div className={`mt-20 transition-all duration-1000 delay-700 ${
+        {/* Call to Action */}
+        <div className={`text-center mt-20 transition-all duration-1000 delay-500 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center group">
-              <div className="glass rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
-                <div className="text-4xl font-bold gradient-text mb-2">
-                  {workProjects.length + hobbyProjects.length}+
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 font-medium">
-                  Ukończonych Projektów
-                </p>
-              </div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="glass rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
-                <div className="text-4xl font-bold gradient-text mb-2">
-                  100%
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 font-medium">
-                  Zadowolonych Klientów
-                </p>
-              </div>
-            </div>
-            
-            <div className="text-center group">
-              <div className="glass rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105">
-                <div className="text-4xl font-bold gradient-text mb-2">
-                  24/7
-                </div>
-                <p className="text-slate-600 dark:text-slate-300 font-medium">
-                  Wsparcie Techniczne
-                </p>
-              </div>
-            </div>
+          <div className="glass rounded-3xl p-8 md:p-12 max-w-4xl mx-auto border border-white/10">
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-4">
+              Masz pomysł na projekt?
+            </h3>
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
+              Skontaktuj się z nami i przekujmy Twoje pomysły w rzeczywistość
+            </p>
+            <button
+              onClick={() => {
+                const element = document.getElementById('contact')
+                if (element) {
+                  element.scrollIntoView({ behavior: 'smooth' })
+                }
+              }}
+              className="btn-primary group"
+            >
+              <span className="flex items-center gap-2">
+                Rozpocznij projekt
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
+            </button>
           </div>
         </div>
       </div>
