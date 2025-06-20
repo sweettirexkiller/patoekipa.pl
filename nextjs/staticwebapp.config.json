@@ -4,8 +4,37 @@
   },
   "routes": [
     {
+      "route": "/admin*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/team*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/projects*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/testimonials*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/contact*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/data*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
       "route": "/api/*",
-      "allowedRoles": ["anonymous"]
+      "allowedRoles": ["anonymous"],
+      "methods": ["GET"]
     },
     {
       "route": "/_next/static/*",
@@ -18,6 +47,12 @@
       "allowedRoles": ["anonymous"]
     }
   ],
+  "responseOverrides": {
+    "401": {
+        "redirect": "/.auth/login/github?post_login_redirect_uri=.referrer",
+        "statusCode": 302
+     }
+ },
   "navigationFallback": {
     "rewrite": "/"
   },

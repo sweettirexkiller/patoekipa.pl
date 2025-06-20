@@ -12,49 +12,6 @@ type AdminSection = 'dashboard' | 'team' | 'projects' | 'testimonials' | 'contac
 
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-
-  // Simple password authentication - in production, use proper auth
-  const handleAuth = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === 'patoekipa2024') { // Change this to a secure password
-      setIsAuthenticated(true);
-    } else {
-      alert('Nieprawidłowe hasło');
-    }
-  };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="admin-panel min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-          <h1 className="text-2xl font-bold text-center mb-6">Panel Administracyjny</h1>
-          <form onSubmit={handleAuth}>
-            <div className="mb-4">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Hasło dostępu
-              </label>
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Zaloguj się
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
   const navigation = [
     { id: 'dashboard' as AdminSection, name: 'Dashboard', icon: '📊' },
@@ -161,12 +118,12 @@ export default function AdminPage() {
             ))}
           </nav>
           <div className="absolute bottom-6 left-6">
-            <button
-              onClick={() => setIsAuthenticated(false)}
+            <a
+              href="/.auth/logout"
               className="text-red-600 hover:text-red-800 text-sm font-medium"
             >
               Wyloguj się
-            </button>
+            </a>
           </div>
         </div>
 
