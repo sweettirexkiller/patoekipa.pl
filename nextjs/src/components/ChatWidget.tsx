@@ -121,7 +121,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Cześć! Jestem asystentem AI zespołu Patoekipa. Jak mogę Ci pomóc?',
+      text: 'Elo kurwa! Witaj w chacie z AI-owym pierdołą zespołu Patoekipa. Co chcesz wiedzieć o naszej bandzie zjebanych kodersów?',
       isUser: false,
       timestamp: new Date(),
     },
