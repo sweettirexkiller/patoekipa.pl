@@ -8,16 +8,29 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true"
+    "postinstall": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true",
+    "migrate": "tsx src/scripts/migrate-data.ts",
+    "migrate:team": "tsx -e \"import { migrateTeamMembers } from './src/scripts/migrate-data'; migrateTeamMembers().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\"",
+    "migrate:projects": "tsx -e \"import { migrateProjects } from './src/scripts/migrate-data'; migrateProjects().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\"",
+    "migrate:testimonials": "tsx -e \"import { migrateTestimonials } from './src/scripts/migrate-data'; migrateTestimonials().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\""
   },
   "dependencies": {
+    "@azure/cosmos": "^4.4.1",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "autoprefixer": "^10.4.21",
     "clsx": "^2.1.1",
+    "cssnano": "^7.0.7",
     "framer-motion": "^12.18.1",
     "lucide-react": "^0.515.0",
     "nanoid": "^5.1.5",
     "next": "^14.2.15",
     "openai": "^5.5.1",
     "picocolors": "^1.1.1",
+    "postcss": "^8.5.6",
+    "postcss-preset-env": "^10.1.5",
     "prismjs": "^1.30.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -29,20 +42,13 @@
     "source-map-js": "^1.2.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^3.4.17",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "cssnano": "^7.0.7",
-    "postcss-preset-env": "^10.1.5",
-    "typescript": "^5",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@types/react-syntax-highlighter": "^15.5.13"
+    "typescript": "^5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "eslint": "^9",
     "eslint-config-next": "^14.2.15",
-    "lightningcss": "^1.30.1"
+    "lightningcss": "^1.30.1",
+    "tsx": "^4.20.3"
   }
 }
