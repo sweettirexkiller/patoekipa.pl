@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       parameters.push({ name: '@teamMemberId', value: teamMemberId });
     }
 
-    query += ' ORDER BY c.priority DESC, c.createdAt DESC';
+    query += ' ORDER BY c.createdAt DESC';
 
     const result = await cosmosOperations.queryDocuments(query, parameters);
     

@@ -15,11 +15,17 @@ interface TeamMember {
     github: string
     linkedin: string
   }
+  experience?: number
+  availability?: string
 }
 
-import portfolioData from '../../../shared/content/portfolio.json'
-
-const teamData = portfolioData
+interface TeamData {
+  team: {
+    name: string
+    description: string
+  }
+  members: TeamMember[]
+}
 
 function MemberCard({ member, index }: { member: TeamMember; index: number }) {
   const [isFlipped, setIsFlipped] = useState(false)
@@ -219,6 +225,14 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
 
 export function TeamSection() {
   const [isVisible, setIsVisible] = useState(false)
+  const [teamData, setTeamData] = useState<TeamData>({
+    team: {
+      name: 'Patoekipa',
+      description: 'Nasz zespół składa się z doświadczonych specjalistów, którzy łączą pasję do technologii z kreatywnością w rozwiązywaniu problemów.'
+    },
+    members: []
+  })
+  const [loading, setLoading] = useState(true)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -237,6 +251,30 @@ export function TeamSection() {
 
     return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    fetchTeamData()
+  }, [])
+
+  const fetchTeamData = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/team')
+      if (response.ok) {
+        const result = await response.json()
+        // Handle the API response structure { success: true, data: [...] }
+        const members = result.success ? result.data : []
+        setTeamData(prev => ({
+          ...prev,
+          members
+        }))
+      }
+    } catch (error) {
+      console.error('Error fetching team data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <section id="team" ref={sectionRef} className="py-24 px-6 relative">
@@ -273,9 +311,20 @@ export function TeamSection() {
 
         {/* Team Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 lg:gap-12">
-          {teamData.members.map((member, index) => (
-            <MemberCard key={member.id} member={member} index={index} />
-          ))}
+          {loading ? (
+            // Loading skeleton
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="h-[500px] bg-gray-200 dark:bg-gray-800 rounded-3xl animate-pulse"></div>
+            ))
+          ) : teamData.members.length > 0 ? (
+            teamData.members.map((member, index) => (
+              <MemberCard key={member.id} member={member} index={index} />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400">Brak członków zespołu do wyświetlenia</p>
+            </div>
+          )}
         </div>
 
         {/* Call to Action */}

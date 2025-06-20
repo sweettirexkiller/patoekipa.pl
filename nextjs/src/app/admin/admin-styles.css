@@ -1,0 +1,42 @@
+/* Admin Panel Input Styles - Only target form inputs */
+.admin-panel input[type="text"],
+.admin-panel input[type="email"],
+.admin-panel input[type="password"], 
+.admin-panel input[type="url"],
+.admin-panel input[type="tel"],
+.admin-panel input[type="number"],
+.admin-panel input[type="date"],
+.admin-panel textarea,
+.admin-panel select {
+  color: #111827 !important; /* gray-900 */
+  background-color: #ffffff !important; /* white */
+}
+
+.admin-panel input::placeholder,
+.admin-panel textarea::placeholder {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+.admin-panel select option {
+  color: #111827 !important; /* gray-900 */
+  background-color: #ffffff !important; /* white */
+}
+
+/* Fix only navigation buttons - remove !important where possible */
+.admin-panel nav button {
+  color: #374151; /* gray-700 */
+}
+
+.admin-panel nav button span {
+  color: inherit;
+}
+
+/* Active navigation button */
+.admin-panel nav button[class*="bg-blue-50"] {
+  color: #1d4ed8; /* blue-700 */
+}
+
+/* Logout button */
+.admin-panel button[class*="text-red-"] {
+  color: #dc2626; /* red-600 */
+} 

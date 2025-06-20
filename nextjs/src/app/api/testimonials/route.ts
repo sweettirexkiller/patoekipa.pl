@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       parameters.push({ name: '@projectId', value: projectId });
     }
 
-    query += ' ORDER BY c.displayOrder ASC, c.rating DESC, c.createdAt DESC';
+    query += ' ORDER BY c.createdAt DESC';
 
     const result = await cosmosOperations.queryDocuments(query, parameters);
     
