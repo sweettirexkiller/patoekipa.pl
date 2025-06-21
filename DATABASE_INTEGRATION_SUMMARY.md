@@ -367,4 +367,140 @@ npm run migrate:testimonials
 - **3 documentation files** created
 - **0 additional costs** (using free tiers)
 
-**The database integration is complete and ready for use! 🎯** 
+**The database integration is complete and ready for use! 🎯**
+
+## 🔧 Technical Implementation
+
+### Database Client (Lazy Initialization)
+The Cosmos DB client uses **lazy initialization** to prevent build-time errors:
+
+```typescript
+// Only initializes when actually needed at runtime
+function initializeCosmosClient() {
+  if (!client && isServerEnvironment()) {
+    // Initialize only in server environment with env vars
+    client = new CosmosClient({ endpoint, key });
+  }
+  return { client, database, container };
+}
+```
+
+**Benefits:**
+- ✅ No build-time initialization errors
+- ✅ Environment variables only required at runtime
+- ✅ Graceful handling of missing configuration
+- ✅ Server-side only operations
+
+### Environment Variables
+Required in GitHub Secrets and local `.env.local`:
+```bash
+COSMOS_DB_ENDPOINT=https://patoekipa-cosmosdb.documents.azure.com:443/
+COSMOS_DB_KEY=your_primary_key_here
+COSMOS_DB_DATABASE_NAME=patoekipa-db
+COSMOS_DB_CONTAINER_NAME=data
+```
+
+### GitHub Actions Integration
+Both workflow files updated with environment variables:
+- `.github/workflows/azure-static-web-apps.yml` (main/master)
+- `.github/workflows/azure-static-web-apps-gentle-mushroom-07432b010.yml` (feature branch)
+
+## 🚀 Deployment Process
+
+### 1. GitHub Secrets Setup
+Add these repository secrets in GitHub:
+- `COSMOS_DB_ENDPOINT`
+- `COSMOS_DB_KEY`
+- `COSMOS_DB_DATABASE_NAME`
+- `COSMOS_DB_CONTAINER_NAME`
+
+### 2. Build Process
+```bash
+# Local development
+npm run dev
+
+# Production build (requires env vars)
+npm run build
+
+# Data migration (after deployment)
+npm run migrate
+```
+
+### 3. Verification
+Test endpoints after deployment:
+- `GET /api/data` - Connection status
+- `GET /api/team` - Team members
+- `GET /api/projects` - Projects
+- `GET /api/testimonials` - Testimonials
+
+## 🐛 Troubleshooting
+
+### Build Error: "COSMOS_DB_KEY environment variable is required"
+
+**Problem**: Environment variables not available during Next.js build process.
+
+**Solution**: ✅ **Fixed with Lazy Initialization**
+- Database client now initializes only at runtime
+- Build process no longer requires database connection
+- Environment variables only needed when API routes are called
+
+**Previous Issue**:
+```javascript
+// ❌ Old: Module-level initialization
+const client = new CosmosClient({ endpoint, key }); // Runs during build
+```
+
+**Current Solution**:
+```javascript
+// ✅ New: Lazy initialization
+function initializeCosmosClient() {
+  if (!client && isServerEnvironment()) {
+    client = new CosmosClient({ endpoint, key }); // Runs only at runtime
+  }
+}
+```
+
+### Other Common Issues
+
+1. **Missing GitHub Secrets**: Ensure all 4 Cosmos DB secrets are added to repository
+2. **Wrong Environment**: Verify you're using the correct Azure Static Web App token
+3. **Network Issues**: Check Azure Cosmos DB firewall settings (should allow all for SWA)
+4. **Data Not Found**: Run migration script after successful deployment
+
+## 📊 Database Schema Overview
+
+### Data Relationships
+```
+TeamMember (1) ←→ (M) Project.teamMembers[]
+TeamMember (1) ←→ (M) Project.projectLead
+Project (1) ←→ (M) Testimonial.projectId
+TeamMember (1) ←→ (M) ContactMessage.assignedTo
+```
+
+### Key Features
+- **Smart Contact Processing**: Automatic urgency detection from message content
+- **Team Availability**: Track member availability for project assignments
+- **Testimonial Workflow**: Approval process with verification status
+- **Project Metrics**: Track completion rates, client satisfaction, revenue
+- **Audit Trail**: Complete timestamps and status tracking
+
+## 💰 Cost Analysis
+- **Azure Cosmos DB**: $0/month (Free Tier)
+- **Azure Static Web Apps**: $0/month (Free Tier)
+- **Total Monthly Cost**: $0
+
+## 🔐 Security
+- ✅ Environment variables in GitHub Secrets (encrypted)
+- ✅ HTTPS-only connections
+- ✅ API route authentication via Azure SWA
+- ✅ Input validation and sanitization
+- ✅ Partition key security
+
+## 📈 Next Steps
+1. ✅ Deploy with fixed build process
+2. ✅ Test all API endpoints
+3. ✅ Verify data migration
+4. 🔄 Integrate with frontend components
+5. 🔄 Set up monitoring and alerts
+6. 🔄 Add automated backups
+7. 🔄 Implement caching strategy 

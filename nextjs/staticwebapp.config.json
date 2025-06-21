@@ -48,8 +48,7 @@
     }
   ],
   "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/admin*", "/api/*", "/_next/*", "*.{css,js,woff,woff2,ttf,png,jpg,jpeg,gif,svg,ico}"]
+    "rewrite": "/index.html"
   },
   "mimeTypes": {
     ".json": "application/json",
