@@ -2,8 +2,9 @@
 const nextConfig = {
   /* config options here */
   
-  // For Azure Static Web Apps with API routes - hybrid mode
-  trailingSlash: false,
+  // For Azure Static Web Apps - enable static export
+  output: 'export',
+  trailingSlash: true,
   
   // Configure image domains if needed
   images: {

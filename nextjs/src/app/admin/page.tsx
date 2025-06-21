@@ -23,33 +23,19 @@ export default function AdminPage() {
   const [userInfo, setUserInfo] = useState<ClientPrincipal | null>(null);
 
   useEffect(() => {
-    // Check authentication status
-    fetch('/.auth/me')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Authentication check failed');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Auth response:', data);
-        if (data.clientPrincipal && data.clientPrincipal.userId) {
-          setIsAuthenticated(true);
-          setUserInfo(data.clientPrincipal);
-        } else {
-          setIsAuthenticated(false);
-          // Redirect to login if not authenticated
-          window.location.href = '/.auth/login/github?post_login_redirect_uri=' + encodeURIComponent(window.location.pathname);
-        }
-      })
-      .catch((error) => {
-        console.error('Authentication error:', error);
-        setIsAuthenticated(false);
-        // Only redirect if we're actually on the admin page
-        if (window.location.pathname.startsWith('/admin')) {
-          window.location.href = '/.auth/login/github?post_login_redirect_uri=' + encodeURIComponent(window.location.pathname);
-        }
+    // Simple password authentication for static export
+    const password = localStorage.getItem('adminPassword');
+    if (password === 'patoekipa2024') {
+      setIsAuthenticated(true);
+      setUserInfo({ 
+        userDetails: 'Admin User', 
+        identityProvider: 'local',
+        userId: 'admin',
+        userRoles: ['admin']
       });
+    } else {
+      setIsAuthenticated(false);
+    }
   }, []);
 
   // Show loading while checking authentication
@@ -66,17 +52,51 @@ export default function AdminPage() {
 
   // Show login prompt if not authenticated
   if (!isAuthenticated) {
+    const handleLogin = (e: React.FormEvent) => {
+      e.preventDefault();
+      const form = e.target as HTMLFormElement;
+      const formData = new FormData(form);
+      const password = formData.get('password') as string;
+      
+      if (password === 'patoekipa2024') {
+        localStorage.setItem('adminPassword', password);
+        setIsAuthenticated(true);
+        setUserInfo({ 
+          userDetails: 'Admin User', 
+          identityProvider: 'local',
+          userId: 'admin',
+          userRoles: ['admin']
+        });
+      } else {
+        alert('Nieprawidłowe hasło');
+      }
+    };
+
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Wymagana autoryzacja</h1>
-          <p className="text-gray-600 mb-6">Musisz się zalogować, aby uzyskać dostęp do panelu administracyjnego.</p>
-          <a
-            href="/.auth/login/github?post_login_redirect_uri=/admin"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Zaloguj się przez GitHub
-          </a>
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4 text-center">Panel Administracyjny</h1>
+          <p className="text-gray-600 mb-6 text-center">Wprowadź hasło aby uzyskać dostęp</p>
+          <form onSubmit={handleLogin}>
+            <div className="mb-4">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Hasło
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Zaloguj się
+            </button>
+          </form>
         </div>
       </div>
     );
@@ -191,12 +211,16 @@ export default function AdminPage() {
             ))}
           </nav>
           <div className="absolute bottom-6 left-6">
-            <a
-              href="/.auth/logout"
+            <button
+              onClick={() => {
+                localStorage.removeItem('adminPassword');
+                setIsAuthenticated(false);
+                setUserInfo(null);
+              }}
               className="text-red-600 hover:text-red-800 text-sm font-medium"
             >
               Wyloguj się
-            </a>
+            </button>
           </div>
         </div>
 
