@@ -25,20 +25,30 @@ export default function AdminPage() {
   useEffect(() => {
     // Check authentication status
     fetch('/.auth/me')
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Authentication check failed');
+        }
+        return response.json();
+      })
       .then(data => {
-        if (data.clientPrincipal) {
+        console.log('Auth response:', data);
+        if (data.clientPrincipal && data.clientPrincipal.userId) {
           setIsAuthenticated(true);
           setUserInfo(data.clientPrincipal);
         } else {
           setIsAuthenticated(false);
           // Redirect to login if not authenticated
-          window.location.href = '/.auth/login/github?post_login_redirect_uri=/admin';
+          window.location.href = '/.auth/login/github?post_login_redirect_uri=' + encodeURIComponent(window.location.pathname);
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Authentication error:', error);
         setIsAuthenticated(false);
-        window.location.href = '/.auth/login/github?post_login_redirect_uri=/admin';
+        // Only redirect if we're actually on the admin page
+        if (window.location.pathname.startsWith('/admin')) {
+          window.location.href = '/.auth/login/github?post_login_redirect_uri=' + encodeURIComponent(window.location.pathname);
+        }
       });
   }, []);
 
