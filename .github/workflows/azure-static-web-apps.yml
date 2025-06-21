@@ -47,6 +47,15 @@ jobs:
         run: |
           cd nextjs
           npm run build
+        env:
+          # Environment variables needed for build
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COSMOS_DB_ENDPOINT: ${{ secrets.COSMOS_DB_ENDPOINT }}
+          COSMOS_DB_KEY: ${{ secrets.COSMOS_DB_KEY }}
+          COSMOS_DB_DATABASE_NAME: ${{ secrets.COSMOS_DB_DATABASE_NAME }}
+          COSMOS_DB_CONTAINER_NAME: ${{ secrets.COSMOS_DB_CONTAINER_NAME }}
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
       
       - name: Build And Deploy
         id: builddeploy
@@ -61,6 +70,16 @@ jobs:
           api_location: "" # Api source code path - optional
           output_location: "out" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
+        env:
+          # Environment variables for build and runtime
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Cosmos DB Configuration
+          COSMOS_DB_ENDPOINT: ${{ secrets.COSMOS_DB_ENDPOINT }}
+          COSMOS_DB_KEY: ${{ secrets.COSMOS_DB_KEY }}
+          COSMOS_DB_DATABASE_NAME: ${{ secrets.COSMOS_DB_DATABASE_NAME }}
+          COSMOS_DB_CONTAINER_NAME: ${{ secrets.COSMOS_DB_CONTAINER_NAME }}
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'

@@ -41,6 +41,11 @@ jobs:
         env:
           # Environment variables for build and runtime
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Cosmos DB Configuration
+          COSMOS_DB_ENDPOINT: ${{ secrets.COSMOS_DB_ENDPOINT }}
+          COSMOS_DB_KEY: ${{ secrets.COSMOS_DB_KEY }}
+          COSMOS_DB_DATABASE_NAME: ${{ secrets.COSMOS_DB_DATABASE_NAME }}
+          COSMOS_DB_CONTAINER_NAME: ${{ secrets.COSMOS_DB_CONTAINER_NAME }}
           NODE_ENV: production
           # Disable problematic features that might cause issues
           NEXT_TELEMETRY_DISABLED: 1
