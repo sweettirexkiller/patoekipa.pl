@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './admin-styles.css';
 import { TeamManagement } from '@/components/admin/TeamManagement';
 import { ProjectsManagement } from '@/components/admin/ProjectsManagement';
@@ -10,8 +10,67 @@ import { DatabaseStatus } from '@/components/admin/DatabaseStatus';
 
 type AdminSection = 'dashboard' | 'team' | 'projects' | 'testimonials' | 'contacts' | 'database';
 
+interface ClientPrincipal {
+  identityProvider: string;
+  userId: string;
+  userDetails: string;
+  userRoles: string[];
+}
+
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userInfo, setUserInfo] = useState<ClientPrincipal | null>(null);
+
+  useEffect(() => {
+    // Check authentication status
+    fetch('/.auth/me')
+      .then(response => response.json())
+      .then(data => {
+        if (data.clientPrincipal) {
+          setIsAuthenticated(true);
+          setUserInfo(data.clientPrincipal);
+        } else {
+          setIsAuthenticated(false);
+          // Redirect to login if not authenticated
+          window.location.href = '/.auth/login/github?post_login_redirect_uri=/admin';
+        }
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+        window.location.href = '/.auth/login/github?post_login_redirect_uri=/admin';
+      });
+  }, []);
+
+  // Show loading while checking authentication
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Sprawdzanie autoryzacji...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Wymagana autoryzacja</h1>
+          <p className="text-gray-600 mb-6">Musisz się zalogować, aby uzyskać dostęp do panelu administracyjnego.</p>
+          <a
+            href="/.auth/login/github?post_login_redirect_uri=/admin"
+            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Zaloguj się przez GitHub
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   const navigation = [
     { id: 'dashboard' as AdminSection, name: 'Dashboard', icon: '📊' },
@@ -28,6 +87,10 @@ export default function AdminPage() {
         return (
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+            <div className="bg-white p-4 rounded-lg shadow mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Zalogowany jako:</h3>
+              <p className="text-gray-600">{userInfo?.userDetails} ({userInfo?.identityProvider})</p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
                 <div className="flex items-center">
