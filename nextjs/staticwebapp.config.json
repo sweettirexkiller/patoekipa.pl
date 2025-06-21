@@ -4,6 +4,10 @@
   },
   "routes": [
     {
+      "route": "/admin*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
       "route": "/api/team*",
       "allowedRoles": ["authenticated"],
       "methods": ["POST", "PUT", "DELETE"]
@@ -44,7 +48,8 @@
     }
   ],
   "navigationFallback": {
-    "rewrite": "/"
+    "rewrite": "/index.html",
+    "exclude": ["/admin*", "/api/*", "/_next/*", "*.{css,js,woff,woff2,ttf,png,jpg,jpeg,gif,svg,ico}"]
   },
   "mimeTypes": {
     ".json": "application/json",
