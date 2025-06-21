@@ -46,18 +46,28 @@ export function ContactSection() {
     setIsSubmitting(true)
     setSubmitStatus('idle')
     
-    // Simulate form submission
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
       
-      // Simulate random success/error for demo
-      if (Math.random() > 0.3) {
-        setSubmitStatus('success')
-        setFormData({ name: '', email: '', message: '' })
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setSubmitStatus('success')
+          setFormData({ name: '', email: '', message: '' })
+        } else {
+          setSubmitStatus('error')
+        }
       } else {
         setSubmitStatus('error')
       }
     } catch (error) {
+      console.error('Error submitting contact form:', error)
       setSubmitStatus('error')
     } finally {
       setIsSubmitting(false)

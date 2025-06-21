@@ -11,64 +11,9 @@ interface Testimonial {
   content: string
   rating: number
   avatar: string
+  featured: boolean
+  testimonialDate: string
 }
-
-const testimonials: Testimonial[] = [
-  {
-    id: '1',
-    name: 'Jan Fikcyjny',
-    role: 'CEO',
-    company: 'FakeCompany Ltd.',
-    content: 'Patoekipa dostarczyła nam rewolucyjną platformę e-commerce. Ich innowacyjne podejście i doskonała komunikacja sprawiły, że projekt przebiegł bez problemów. Wzrost sprzedaży o 300% mówi sam za siebie!',
-    rating: 5,
-    avatar: '👩‍💼'
-  },
-  {
-    id: '2',
-    name: 'Anna Przykładowa',
-    role: 'CTO',
-    company: 'DummyCorp Industries',
-    content: 'Zespół Patoekipa stworzył dla nas zaawansowany system AI do analizy danych. Jakość kodu, dokumentacja i wsparcie przerosły nasze oczekiwania. To partnerzy, na których można polegać!',
-    rating: 5,
-    avatar: '👨‍💻'
-  },
-  {
-    id: '3',
-    name: 'Marek Testowy',
-    role: 'Product Manager',
-    company: 'FictionalTech Solutions',
-    content: 'Aplikacja mobilna stworzona przez Patoekipę zdobyła już ponad milion użytkowników. Ich wiedza techniczna i kreatywność w UX/UI design sprawiają, że każdy projekt to prawdziwy sukces.',
-    rating: 5,
-    avatar: '👩‍🚀'
-  },
-  {
-    id: '4',
-    name: 'Katarzyna Przykład',
-    role: 'Founder',
-    company: 'MockStartup Inc.',
-    content: 'Dzięki Patoekipie udało nam się zdobyć rundę finansowania Series A. Ich MVP było na tyle imponujące, że inwestorzy od razu uwierzyli w naszą wizję. Profesjonalizm na najwyższym poziomie!',
-    rating: 5,
-    avatar: '🚀'
-  },
-  {
-    id: '5',
-    name: 'Piotr Demoński',
-    role: 'Marketing Director',
-    company: 'PlaceholderBrand Co.',
-    content: 'System CRM stworzony przez Patoekipę zwiększył naszą efektywność o 250%. Automatyzacja procesów i intuicyjny interfejs sprawiają, że praca z nim to czysta przyjemność. Rewelacyjny zespół!',
-    rating: 5,
-    avatar: '💼'
-  },
-  {
-    id: '6',
-    name: 'Ewa Wzorcowa',
-    role: 'Tech Lead',
-    company: 'SampleSystems Corp',
-    content: 'Mikroserwisy zaprojektowane przez Patoekipę obsługują obecnie 10 milionów requestów dziennie. Ich architektura jest skalowalna, bezpieczna i niezawodna. To prawdziwi mistrzowie swojego fachu!',
-    rating: 5,
-    avatar: '⚡'
-  }
-]
 
 const positiveWords = [
   'Niesamowici!',
@@ -85,6 +30,8 @@ export function TestimonialsSection() {
   const [isVisible, setIsVisible] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [hoveredCard, setHoveredCard] = useState<string | null>(null)
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
+  const [loading, setLoading] = useState(true)
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -104,16 +51,36 @@ export function TestimonialsSection() {
     return () => observer.disconnect()
   }, [])
 
+  useEffect(() => {
+    fetchTestimonials()
+  }, [])
+
+  const fetchTestimonials = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/testimonials')
+      if (response.ok) {
+        const result = await response.json()
+        const testimonialsData = result.success ? result.data : []
+        setTestimonials(testimonialsData)
+      }
+    } catch (error) {
+      console.error('Error fetching testimonials:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // Auto-rotate testimonials
   useEffect(() => {
-    if (!isVisible) return
+    if (!isVisible || testimonials.length === 0) return
     
     const interval = setInterval(() => {
       setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [isVisible])
+  }, [isVisible, testimonials.length])
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -171,130 +138,157 @@ export function TestimonialsSection() {
         </div>
 
         {/* Featured Testimonial */}
-        <div className={`mb-16 transition-all duration-1000 delay-300 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
-          <FloatingCard
-            className="max-w-4xl mx-auto"
-            glowColor="rgba(6, 182, 212, 0.4)"
-            intensity={0.5}
-          >
-            <div className="glass rounded-3xl p-8 md:p-12 border border-white/20 text-center">
-              <div className="mb-6">
-                <div className="flex justify-center mb-4">
-                  {renderStars(testimonials[currentTestimonial].rating)}
-                </div>
-                <blockquote className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 leading-relaxed mb-8 italic">
-                  "{testimonials[currentTestimonial].content}"
-                </blockquote>
-              </div>
-              
-              <div className="flex items-center justify-center space-x-4">
-                <div className="text-4xl">
-                  {testimonials[currentTestimonial].avatar}
-                </div>
-                <div className="text-left">
-                  <h4 className="text-lg font-bold text-slate-800 dark:text-white">
-                    {testimonials[currentTestimonial].name}
-                  </h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {testimonials[currentTestimonial].role} w {testimonials[currentTestimonial].company}
-                  </p>
-                </div>
-              </div>
-              
-              {/* Testimonial Navigation Dots */}
-              <div className="flex justify-center space-x-2 mt-8">
-                {testimonials.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentTestimonial(index)}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      index === currentTestimonial
-                        ? 'bg-gradient-to-r from-cyan-500 to-blue-500 scale-125'
-                        : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500'
-                    }`}
-                  />
-                ))}
+        {loading ? (
+          <div className={`mb-16 transition-all duration-1000 delay-300 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <div className="glass rounded-3xl p-8 md:p-12 border border-white/20 text-center max-w-4xl mx-auto">
+              <div className="animate-pulse">
+                <div className="h-6 bg-gray-300 dark:bg-gray-700 rounded mb-4 mx-auto w-32"></div>
+                <div className="h-16 bg-gray-300 dark:bg-gray-700 rounded mb-8"></div>
+                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded mb-2 w-48 mx-auto"></div>
+                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-32 mx-auto"></div>
               </div>
             </div>
-          </FloatingCard>
-        </div>
-
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={testimonial.id}
-              className={`transition-all duration-1000 ${
-                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-              }`}
-              style={{ transitionDelay: `${index * 150 + 600}ms` }}
-              onMouseEnter={() => setHoveredCard(testimonial.id)}
-              onMouseLeave={() => setHoveredCard(null)}
+          </div>
+        ) : testimonials.length > 0 ? (
+          <div className={`mb-16 transition-all duration-1000 delay-300 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <FloatingCard
+              className="max-w-4xl mx-auto"
+              glowColor="rgba(6, 182, 212, 0.4)"
+              intensity={0.5}
             >
-              <FloatingCard
-                className="h-full"
-                glowColor={`rgba(${index % 3 === 0 ? '6, 182, 212' : index % 3 === 1 ? '59, 130, 246' : '139, 92, 246'}, 0.3)`}
-                intensity={0.3}
-              >
-                <div className="glass rounded-2xl p-6 h-full flex flex-col border border-white/10">
-                  {/* Rating */}
+              <div className="glass rounded-3xl p-8 md:p-12 border border-white/20 text-center">
+                <div className="mb-6">
                   <div className="flex justify-center mb-4">
-                    {renderStars(testimonial.rating)}
+                    {renderStars(testimonials[currentTestimonial].rating)}
                   </div>
-                  
-                  {/* Content */}
-                  <blockquote className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6 flex-1 text-sm italic">
-                    "{testimonial.content}"
+                  <blockquote className="text-xl md:text-2xl text-slate-700 dark:text-slate-300 leading-relaxed mb-8 italic">
+                    "{testimonials[currentTestimonial].content}"
                   </blockquote>
-                  
-                  {/* Author */}
-                  <div className="flex items-center space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <div className="text-2xl">
-                      {testimonial.avatar}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-slate-800 dark:text-white text-sm">
-                        {hoveredCard === testimonial.id ? (
-                          <ScrambledText 
-                            text={testimonial.name}
-                            className="gradient-text"
-                            scrambleSpeed={30}
-                          />
-                        ) : (
-                          testimonial.name
-                        )}
-                      </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {testimonial.role}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                        {testimonial.company}
-                      </p>
-                    </div>
+                </div>
+                
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="text-4xl">
+                    {testimonials[currentTestimonial].avatar}
+                  </div>
+                  <div className="text-left">
+                    <h4 className="text-lg font-bold text-slate-800 dark:text-white">
+                      {testimonials[currentTestimonial].name}
+                    </h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      {testimonials[currentTestimonial].role} at {testimonials[currentTestimonial].company}
+                    </p>
                   </div>
                 </div>
-              </FloatingCard>
+                
+                {/* Testimonial Navigation */}
+                <div className="flex justify-center space-x-2 mt-8">
+                  {testimonials.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentTestimonial(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        index === currentTestimonial
+                          ? 'bg-gradient-to-r from-cyan-600 to-blue-600 scale-125'
+                          : 'bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </FloatingCard>
+          </div>
+        ) : (
+          <div className={`mb-16 transition-all duration-1000 delay-300 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <div className="glass rounded-3xl p-8 md:p-12 border border-white/20 text-center max-w-4xl mx-auto">
+              <p className="text-gray-500 dark:text-gray-400">Brak opinii klientów do wyświetlenia</p>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* All Testimonials Grid */}
+        {!loading && testimonials.length > 1 && (
+          <div className={`transition-all duration-1000 delay-500 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <h3 className="text-2xl md:text-3xl font-bold text-center text-slate-800 dark:text-white mb-12">
+              Wszystkie Opinie
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={testimonial.id}
+                  className={`animate-fade-in-up ${
+                    isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                  }`}
+                  style={{ transitionDelay: `${index * 150}ms` }}
+                  onMouseEnter={() => setHoveredCard(testimonial.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <FloatingCard
+                    glowColor="rgba(6, 182, 212, 0.2)"
+                    intensity={hoveredCard === testimonial.id ? 0.4 : 0.2}
+                  >
+                    <div className="glass rounded-3xl p-6 border border-white/10 hover:border-white/20 transition-all duration-300 h-full flex flex-col">
+                      {/* Rating */}
+                      <div className="flex justify-center mb-4">
+                        {renderStars(testimonial.rating)}
+                      </div>
+                      
+                      {/* Quote */}
+                      <blockquote className="text-slate-700 dark:text-slate-300 leading-relaxed mb-6 italic flex-1 text-center">
+                        "{testimonial.content}"
+                      </blockquote>
+                      
+                      {/* Author */}
+                      <div className="flex items-center space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <div className="text-2xl">{testimonial.avatar}</div>
+                        <div>
+                          <h4 className="font-bold text-slate-800 dark:text-white text-sm">
+                            {hoveredCard === testimonial.id ? (
+                              <ScrambledText 
+                                text={testimonial.name}
+                                className="gradient-text"
+                                scrambleSpeed={25}
+                              />
+                            ) : (
+                              testimonial.name
+                            )}
+                          </h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            {testimonial.role}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-slate-500">
+                            {testimonial.company}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </FloatingCard>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
-        <div className={`text-center mt-16 transition-all duration-1000 delay-1000 ${
+        <div className={`text-center mt-20 transition-all duration-1000 delay-700 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
-          <div className="glass rounded-2xl p-8 max-w-2xl mx-auto border border-white/20">
-            <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
-              <TextReveal text="Dołącz do Zadowolonych Klientów!" delay={1.2} />
+          <div className="glass rounded-3xl p-8 md:p-12 max-w-4xl mx-auto border border-white/10">
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-4">
+              Chcesz dołączyć do naszych zadowolonych klientów?
             </h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-6">
-              <TextReveal 
-                text="Rozpocznij swoją podróż z nami już dziś i zobacz, dlaczego firmy wybierają Patoekipę"
-                delay={1.4}
-              />
+            <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
+              Skontaktuj się z nami i rozpocznij swoją podróż do sukcesu
             </p>
-            <button 
+            <button
               onClick={() => {
                 const element = document.getElementById('contact')
                 if (element) {
@@ -304,7 +298,7 @@ export function TestimonialsSection() {
               className="btn-primary group"
             >
               <span className="flex items-center gap-2">
-                Rozpocznij Projekt
+                Rozpocznij współpracę
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
