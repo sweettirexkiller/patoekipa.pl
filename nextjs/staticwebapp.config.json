@@ -4,10 +4,6 @@
   },
   "routes": [
     {
-      "route": "/admin*",
-      "allowedRoles": ["authenticated"]
-    },
-    {
       "route": "/api/team*",
       "allowedRoles": ["authenticated"],
       "methods": ["POST", "PUT", "DELETE"]
@@ -47,15 +43,8 @@
       "allowedRoles": ["anonymous"]
     }
   ],
-  "responseOverrides": {
-    "401": {
-      "redirect": "/.auth/login/github?post_login_redirect_uri=.referrer",
-      "statusCode": 302
-    }
-  },
   "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/admin*", "/api/*", "/_next/*"]
+    "rewrite": "/"
   },
   "mimeTypes": {
     ".json": "application/json",
