@@ -5,9 +5,11 @@
   "routes": [
     {
       "route": "/admin*",
-      "allowedRoles": ["authenticated"],
-      "statusCode": 302,
-      "redirect": "/.auth/login/github?post_login_redirect_uri=/admin"
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/data*",
+      "allowedRoles": ["authenticated"]
     },
     {
       "route": "/api/team*",
@@ -30,22 +32,7 @@
       "methods": ["POST", "PUT", "DELETE"]
     },
     {
-      "route": "/api/data*",
-      "allowedRoles": ["authenticated"]
-    },
-    {
       "route": "/api/*",
-      "allowedRoles": ["anonymous"],
-      "methods": ["GET"]
-    },
-    {
-      "route": "/_next/static/*",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      }
-    },
-    {
-      "route": "/_next/image*",
       "allowedRoles": ["anonymous"]
     }
   ],

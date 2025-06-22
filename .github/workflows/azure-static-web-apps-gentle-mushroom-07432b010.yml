@@ -24,6 +24,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
+      
+      - name: Sync shared assets
+        run: |
+          cd nextjs
+          mkdir -p public/shared/assets
+          cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true
           
       - name: Build And Deploy
         id: builddeploy
@@ -36,7 +42,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
           api_location: "" # Api source code path - Next.js handles API routes
-          output_location: "" # Let Azure auto-detect Next.js hybrid build output
+          output_location: "" # Let Azure SWA auto-detect build output
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime
