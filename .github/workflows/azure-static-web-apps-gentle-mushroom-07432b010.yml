@@ -31,6 +31,21 @@ jobs:
           mkdir -p public/shared/assets
           cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true
           
+      - name: Prepare Azure SWA output
+        run: |
+          cd nextjs
+          # Create output directory for Azure SWA
+          mkdir -p swa-output
+          
+          # Copy static assets
+          cp -r .next/static swa-output/_next/
+          cp -r public/* swa-output/ 2>/dev/null || true
+          
+          # Copy prerendered HTML files
+          cp .next/server/app/index.html swa-output/index.html 2>/dev/null || true
+          cp .next/server/app/admin.html swa-output/admin.html 2>/dev/null || true
+          cp .next/server/app/_not-found.html swa-output/404.html 2>/dev/null || true
+          
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -42,7 +57,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
           api_location: "" # Next.js handles API routes internally
-          output_location: "" # Auto-detect output location
+          output_location: "swa-output" # Custom prepared output for Azure SWA
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime
