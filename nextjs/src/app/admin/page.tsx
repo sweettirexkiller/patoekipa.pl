@@ -143,13 +143,33 @@ export default function AdminPage() {
           </div>
         );
       case 'team':
-        return <TeamManagement />;
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Zarządzanie Zespołem</h2>
+            <p className="text-gray-600">Funkcja dostępna w trybie hybrydowym z API routes.</p>
+          </div>
+        );
       case 'projects':
-        return <ProjectsManagement />;
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Zarządzanie Projektami</h2>
+            <p className="text-gray-600">Funkcja dostępna w trybie hybrydowym z API routes.</p>
+          </div>
+        );
       case 'testimonials':
-        return <TestimonialsManagement />;
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Zarządzanie Opiniami</h2>
+            <p className="text-gray-600">Funkcja dostępna w trybie hybrydowym z API routes.</p>
+          </div>
+        );
       case 'contacts':
-        return <ContactsManagement />;
+        return (
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Zarządzanie Kontaktami</h2>
+            <p className="text-gray-600">Funkcja dostępna w trybie hybrydowym z API routes.</p>
+          </div>
+        );
       case 'database':
         return <DatabaseStatus />;
       default:

@@ -1,39 +1,8 @@
 {
-  "platform": {
-    "apiRuntime": "node:18"
-  },
   "routes": [
     {
       "route": "/admin*",
       "allowedRoles": ["authenticated"]
-    },
-    {
-      "route": "/api/data*",
-      "allowedRoles": ["authenticated"]
-    },
-    {
-      "route": "/api/team*",
-      "allowedRoles": ["authenticated"],
-      "methods": ["POST", "PUT", "DELETE"]
-    },
-    {
-      "route": "/api/projects*",
-      "allowedRoles": ["authenticated"],
-      "methods": ["POST", "PUT", "DELETE"]
-    },
-    {
-      "route": "/api/testimonials*",
-      "allowedRoles": ["authenticated"],
-      "methods": ["POST", "PUT", "DELETE"]
-    },
-    {
-      "route": "/api/contact*",
-      "allowedRoles": ["authenticated"],
-      "methods": ["POST", "PUT", "DELETE"]
-    },
-    {
-      "route": "/api/*",
-      "allowedRoles": ["anonymous"]
     }
   ],
   "navigationFallback": {
@@ -43,16 +12,5 @@
     "401": {
       "redirect": "/.auth/login/github?post_login_redirect_uri=/admin"
     }
-  },
-  "mimeTypes": {
-    ".json": "application/json",
-    ".css": "text/css",
-    ".js": "application/javascript",
-    ".mjs": "application/javascript"
-  },
-  "globalHeaders": {
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "X-XSS-Protection": "1; mode=block"
   }
 } 
