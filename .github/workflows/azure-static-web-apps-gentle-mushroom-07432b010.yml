@@ -42,7 +42,7 @@ jobs:
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
           api_location: "" # Next.js handles API routes internally
-          output_location: "" # Let Azure auto-detect Next.js hybrid output
+          output_location: "" # Auto-detect output location
           ###### End of Repository/Build Configurations ######
         env:
           # Environment variables for build and runtime
