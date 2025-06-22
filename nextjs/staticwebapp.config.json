@@ -1,8 +1,40 @@
 {
+  "platform": {
+    "apiRuntime": "node:18"
+  },
   "routes": [
     {
       "route": "/admin*",
       "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/data*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/team*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/projects*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/testimonials*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/contact*",
+      "allowedRoles": ["authenticated"],
+      "methods": ["POST", "PUT", "DELETE"]
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"],
+      "methods": ["GET"]
     }
   ],
   "navigationFallback": {

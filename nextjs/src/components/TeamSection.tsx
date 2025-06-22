@@ -259,74 +259,16 @@ export function TeamSection() {
   const fetchTeamData = async () => {
     try {
       setLoading(true)
-      // Use static data for static export
-      const staticMembers: TeamMember[] = [
-        {
-          id: '1',
-          name: 'Michał Ozdowski',
-          role: 'Full Stack Developer',
-          bio: 'Doświadczony programista z pasją do nowoczesnych technologii i rozwiązań chmurowych.',
-          skills: ['React', 'Next.js', 'TypeScript', 'Node.js', 'Azure', 'Docker'],
-          avatar: '/shared/assets/avatars/michal.jpg',
-          portfolioUrl: 'https://github.com/mozdowski',
-          social: {
-            github: 'https://github.com/mozdowski',
-            linkedin: 'https://linkedin.com/in/michal-ozdowski'
-          },
-          experience: 5,
-          availability: 'Dostępny'
-        },
-        {
-          id: '2',
-          name: 'Piotr Kowalski',
-          role: 'Frontend Developer',
-          bio: 'Specjalista od interfejsów użytkownika z okiem do designu i UX.',
-          skills: ['React', 'Vue.js', 'CSS3', 'JavaScript', 'Figma', 'Tailwind'],
-          avatar: '/shared/assets/avatars/piotr.jpg',
-          portfolioUrl: 'https://github.com/piotr',
-          social: {
-            github: 'https://github.com/piotr',
-            linkedin: 'https://linkedin.com/in/piotr'
-          },
-          experience: 4,
-          availability: 'Dostępny'
-        },
-        {
-          id: '3',
-          name: 'Tomasz Nowak',
-          role: 'Backend Developer',
-          bio: 'Ekspert od architektury systemów i baz danych.',
-          skills: ['Python', 'Django', 'PostgreSQL', 'Redis', 'AWS', 'Kubernetes'],
-          avatar: '/shared/assets/avatars/tomasz.jpg',
-          portfolioUrl: 'https://github.com/tomasz',
-          social: {
-            github: 'https://github.com/tomasz',
-            linkedin: 'https://linkedin.com/in/tomasz'
-          },
-          experience: 6,
-          availability: 'Dostępny'
-        },
-        {
-          id: '4',
-          name: 'Anna Wiśniewska',
-          role: 'UI/UX Designer',
-          bio: 'Kreatywna designerka z doświadczeniem w projektowaniu aplikacji mobilnych i webowych.',
-          skills: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping', 'User Research', 'Design Systems'],
-          avatar: '/shared/assets/avatars/anna.jpg',
-          portfolioUrl: 'https://github.com/anna',
-          social: {
-            github: 'https://github.com/anna',
-            linkedin: 'https://linkedin.com/in/anna'
-          },
-          experience: 4,
-          availability: 'Dostępny'
-        }
-      ]
-      
-      setTeamData(prev => ({
-        ...prev,
-        members: staticMembers
-      }))
+      const response = await fetch('/api/team')
+      if (response.ok) {
+        const result = await response.json()
+        // Handle the API response structure { success: true, data: [...] }
+        const members = result.success ? result.data : []
+        setTeamData(prev => ({
+          ...prev,
+          members
+        }))
+      }
     } catch (error) {
       console.error('Error fetching team data:', error)
     } finally {

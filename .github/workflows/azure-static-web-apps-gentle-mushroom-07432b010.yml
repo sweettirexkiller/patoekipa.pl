@@ -41,11 +41,16 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/nextjs" # App source code path
-          api_location: "" # No API routes with static export
-          output_location: "out" # Static export output directory
+          api_location: "" # Next.js handles API routes internally
+          output_location: "" # Let Azure auto-detect Next.js hybrid output
           ###### End of Repository/Build Configurations ######
         env:
-          # Environment variables for build
+          # Environment variables for build and runtime
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          COSMOS_DB_ENDPOINT: ${{ secrets.COSMOS_DB_ENDPOINT }}
+          COSMOS_DB_KEY: ${{ secrets.COSMOS_DB_KEY }}
+          COSMOS_DB_DATABASE_NAME: ${{ secrets.COSMOS_DB_DATABASE_NAME }}
+          COSMOS_DB_CONTAINER_NAME: ${{ secrets.COSMOS_DB_CONTAINER_NAME }}
           NODE_ENV: production
           NEXT_TELEMETRY_DISABLED: 1
 
