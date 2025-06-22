@@ -23,14 +23,9 @@ export default function AdminPage() {
   const [userInfo, setUserInfo] = useState<ClientPrincipal | null>(null);
 
   useEffect(() => {
-    // Check GitHub authentication status via Azure SWA
+    // Check if we're already authenticated
     fetch('/.auth/me')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Authentication check failed');
-        }
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
         console.log('Auth response:', data);
         if (data.clientPrincipal && data.clientPrincipal.userId) {
@@ -38,17 +33,11 @@ export default function AdminPage() {
           setUserInfo(data.clientPrincipal);
         } else {
           setIsAuthenticated(false);
-          // Redirect to GitHub login if not authenticated
-          window.location.href = '/.auth/login/github?post_login_redirect_uri=' + encodeURIComponent(window.location.pathname);
         }
       })
       .catch((error) => {
         console.error('Authentication error:', error);
         setIsAuthenticated(false);
-        // Only redirect if we're actually on the admin page
-        if (window.location.pathname.startsWith('/admin')) {
-          window.location.href = '/.auth/login/github?post_login_redirect_uri=' + encodeURIComponent(window.location.pathname);
-        }
       });
   }, []);
 
