@@ -4,10 +4,6 @@
   },
   "routes": [
     {
-      "route": "/",
-      "allowedRoles": ["anonymous"]
-    },
-    {
       "route": "/admin*",
       "allowedRoles": ["authenticated"]
     },
@@ -48,9 +44,6 @@
   "responseOverrides": {
     "401": {
       "redirect": "/.auth/login/github?post_login_redirect_uri=/admin"
-    },
-    "404": {
-      "rewrite": "/index.html"
     }
   }
 } 
