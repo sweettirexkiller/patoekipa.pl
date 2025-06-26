@@ -25,6 +25,12 @@ const nextConfig = {
     serverComponentsExternalPackages: [],
   },
   
+  // Add distDir to ensure proper Azure SWA deployment
+  distDir: '.next',
+  
+  // Ensure proper asset prefix handling
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  
   // Compiler options
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -39,6 +45,25 @@ const nextConfig = {
     };
     
     return config;
+  },
+  
+  // Azure SWA specific headers and redirects
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+    ];
   },
 };
 
