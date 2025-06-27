@@ -17,6 +17,18 @@ interface ClientPrincipal {
   userRoles: string[];
 }
 
+interface UserClaim {
+  typ: string;
+  val: string;
+}
+
+interface AzureAuthUser {
+  access_token: string;
+  provider_name: string;
+  user_claims: UserClaim[];
+  user_id: string;
+}
+
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -28,9 +40,21 @@ export default function AdminPage() {
       .then(response => response.json())
       .then(data => {
         console.log('Auth response:', data);
-        if (data.clientPrincipal && data.clientPrincipal.userId) {
+        
+        // Azure App Service v2 returns an array with user data
+        if (Array.isArray(data) && data.length > 0 && data[0].user_id) {
+          const userInfo: AzureAuthUser = data[0];
           setIsAuthenticated(true);
-          setUserInfo(data.clientPrincipal);
+          
+          // Convert to expected format for compatibility
+          const clientPrincipal: ClientPrincipal = {
+            identityProvider: userInfo.provider_name || 'github',
+            userId: userInfo.user_id,
+            userDetails: userInfo.user_claims?.find((claim: UserClaim) => claim.typ === 'urn:github:login')?.val || 'Unknown User',
+            userRoles: ['authenticated']
+          };
+          
+          setUserInfo(clientPrincipal);
         } else {
           setIsAuthenticated(false);
         }
