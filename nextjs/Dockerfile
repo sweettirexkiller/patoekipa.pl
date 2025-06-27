@@ -4,9 +4,9 @@ FROM node:18-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# Install ALL dependencies (including dev) for building
 COPY package.json ./
-RUN npm install --only=production
+RUN npm install
 
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
