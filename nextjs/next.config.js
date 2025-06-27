@@ -2,12 +2,15 @@
 const nextConfig = {
   /* config options here */
   
+  // Configure for Azure App Service
+  output: 'standalone',
+  
   // Configure image domains if needed
   images: {
-    unoptimized: true, // Required for Azure SWA
+    unoptimized: false, // Can use optimized images with App Service
   },
 
-  // Optimize for Azure Static Web Apps
+  // Standard configuration
   poweredByHeader: false,
   trailingSlash: false,
   
