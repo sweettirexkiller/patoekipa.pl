@@ -21,6 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Prepare shared assets
+        run: |
+          cd nextjs
+          mkdir -p public/shared/assets
+          cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
