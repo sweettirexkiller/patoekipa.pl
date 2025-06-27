@@ -31,9 +31,23 @@ export default function AdminPage() {
         console.log('Auth response type:', typeof data);
         console.log('Is array:', Array.isArray(data));
         
+        // Handle case where response is a string that needs to be parsed
+        let parsedData = data;
+        if (typeof data === 'string') {
+          console.log('Response is string, parsing...');
+          try {
+            parsedData = JSON.parse(data);
+            console.log('Parsed data:', parsedData);
+          } catch (e) {
+            console.error('Failed to parse JSON string:', e);
+            setIsAuthenticated(false);
+            return;
+          }
+        }
+        
         // Handle Azure App Service v2 format (array with user data)
-        if (Array.isArray(data) && data.length > 0 && data[0].user_id) {
-          const userInfo = data[0];
+        if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].user_id) {
+          const userInfo = parsedData[0];
           console.log('User info from array:', userInfo);
           console.log('User claims:', userInfo.user_claims);
           
@@ -61,12 +75,12 @@ export default function AdminPage() {
           setUserInfo(clientPrincipal);
         }
         // Handle legacy format (if it exists)
-        else if (data.clientPrincipal && data.clientPrincipal.userId) {
+        else if (parsedData.clientPrincipal && parsedData.clientPrincipal.userId) {
           console.log('Using legacy clientPrincipal format');
           setIsAuthenticated(true);
-          setUserInfo(data.clientPrincipal);
+          setUserInfo(parsedData.clientPrincipal);
         } else {
-          console.log('No authentication found, data:', data);
+          console.log('No authentication found, parsedData:', parsedData);
           setIsAuthenticated(false);
         }
       })
