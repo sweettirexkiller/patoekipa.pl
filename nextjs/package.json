@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "prebuild": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "mkdir -p public/shared/assets && cp -r ../shared/assets/* public/shared/assets/ 2>/dev/null || true",
     "migrate": "tsx src/scripts/migrate-data.ts",
     "migrate:team": "tsx -e \"import { migrateTeamMembers } from './src/scripts/migrate-data'; migrateTeamMembers().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\"",
     "migrate:projects": "tsx -e \"import { migrateProjects } from './src/scripts/migrate-data'; migrateProjects().then(() => process.exit(0)).catch(e => { console.error(e); process.exit(1); })\"",
