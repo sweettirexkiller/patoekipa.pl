@@ -5,11 +5,8 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
-RUN \
-  if [ -f package-lock.json ]; then npm ci --only=production; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+COPY package.json ./
+RUN npm install --only=production
 
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
