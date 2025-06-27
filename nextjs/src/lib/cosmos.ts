@@ -7,7 +7,11 @@ function getErrorMessage(error: unknown): string {
 
 // Check if we're in a server environment (not during build)
 function isServerEnvironment(): boolean {
-  return typeof window === 'undefined' && process.env.NODE_ENV !== undefined;
+  return typeof window === 'undefined' && (
+    process.env.NODE_ENV !== undefined || 
+    process.env.COSMOS_DB_KEY !== undefined ||
+    process.argv.some(arg => arg.includes('migrate'))
+  );
 }
 
 // Cosmos DB configuration
@@ -73,6 +77,11 @@ export function getCosmosClient(): CosmosClient {
     throw new Error('Failed to initialize Cosmos DB client');
   }
   return clientInstance;
+}
+
+// Export function to get container directly
+export function getCosmosContainer(): Container {
+  return getContainer();
 }
 
 // Helper functions for common operations

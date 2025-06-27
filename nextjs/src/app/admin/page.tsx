@@ -7,8 +7,9 @@ import { ProjectsManagement } from '@/components/admin/ProjectsManagement';
 import { TestimonialsManagement } from '@/components/admin/TestimonialsManagement';
 import { ContactsManagement } from '@/components/admin/ContactsManagement';
 import { DatabaseStatus } from '@/components/admin/DatabaseStatus';
+import AdminUsersManagement from '@/components/admin/AdminUsersManagement';
 
-type AdminSection = 'dashboard' | 'team' | 'projects' | 'testimonials' | 'contacts' | 'database';
+type AdminSection = 'dashboard' | 'team' | 'projects' | 'testimonials' | 'contacts' | 'database' | 'users';
 
 interface ClientPrincipal {
   identityProvider: string;
@@ -16,6 +17,14 @@ interface ClientPrincipal {
   userDetails: string;
   userRoles: string[];
 }
+
+// Whitelist of allowed GitHub usernames
+const ALLOWED_ADMIN_USERS = [
+  'mozdowski',
+  // Add other GitHub usernames here
+  // 'teammate1',
+  // 'teammate2',
+];
 
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
@@ -71,8 +80,15 @@ export default function AdminPage() {
           
           console.log('Created clientPrincipal:', clientPrincipal);
           
-          setIsAuthenticated(true);
-          setUserInfo(clientPrincipal);
+          // Check if user is in the allowed list
+          if (ALLOWED_ADMIN_USERS.includes(username)) {
+            console.log('User authorized for admin access:', username);
+            setIsAuthenticated(true);
+            setUserInfo(clientPrincipal);
+          } else {
+            console.log('User not authorized for admin access:', username);
+            setIsAuthenticated(false);
+          }
         }
         // Handle legacy format (if it exists)
         else if (parsedData.clientPrincipal && parsedData.clientPrincipal.userId) {
@@ -104,20 +120,46 @@ export default function AdminPage() {
 
   // Show login prompt if not authenticated
   if (!isAuthenticated) {
+    // Check if user was authenticated but not authorized
+    const isUnauthorized = userInfo && !ALLOWED_ADMIN_USERS.includes(userInfo.userDetails);
+    
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Panel Administracyjny</h1>
-          <p className="text-gray-600 mb-6">Musisz się zalogować przez GitHub, aby uzyskać dostęp do panelu administracyjnego.</p>
-          <a
-            href="/.auth/login/github?post_login_redirect_uri=/admin"
-            className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
-          >
-            <svg className="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
-            </svg>
-            Zaloguj się przez GitHub
-          </a>
+          
+          {isUnauthorized ? (
+            <>
+              <div className="text-red-600 mb-4">
+                <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <p className="text-red-600 mb-4 font-semibold">Brak uprawnień</p>
+              <p className="text-gray-600 mb-6">
+                Jesteś zalogowany jako <strong>{userInfo.userDetails}</strong>, ale nie masz uprawnień do panelu administracyjnego.
+              </p>
+              <a
+                href="/.auth/logout"
+                className="inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Wyloguj się
+              </a>
+            </>
+          ) : (
+            <>
+              <p className="text-gray-600 mb-6">Musisz się zalogować przez GitHub, aby uzyskać dostęp do panelu administracyjnego.</p>
+              <a
+                href="/.auth/login/github?post_login_redirect_uri=/admin"
+                className="inline-block bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                <svg className="inline-block w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                </svg>
+                Zaloguj się przez GitHub
+              </a>
+            </>
+          )}
         </div>
       </div>
     );
@@ -125,6 +167,7 @@ export default function AdminPage() {
 
   const navigation = [
     { id: 'dashboard' as AdminSection, name: 'Dashboard', icon: '📊' },
+    { id: 'users' as AdminSection, name: 'Administratorzy', icon: '👤' },
     { id: 'team' as AdminSection, name: 'Zespół', icon: '👥' },
     { id: 'projects' as AdminSection, name: 'Projekty', icon: '🚀' },
     { id: 'testimonials' as AdminSection, name: 'Opinie', icon: '⭐' },
@@ -191,6 +234,11 @@ export default function AdminPage() {
             <DatabaseStatus />
           </div>
         );
+      case 'users':
+        return <AdminUsersManagement currentUser={{
+          githubUsername: userInfo?.userDetails || '',
+          role: 'super_admin' // For now, all legacy users get super_admin role
+        }} />;
       case 'team':
         return <TeamManagement />;
       case 'projects':

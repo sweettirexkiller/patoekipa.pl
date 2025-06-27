@@ -258,6 +258,28 @@ export interface AppConfig extends BaseDocument {
   isPublic: boolean; // Can be exposed to frontend
 }
 
+// Admin User Schema
+export interface AdminUser extends BaseDocument {
+  type: 'admin_user';
+  githubUsername: string;
+  githubUserId: string;
+  displayName: string;
+  email?: string;
+  role: 'super_admin' | 'admin' | 'editor';
+  isActive: boolean;
+  lastLoginAt?: string;
+  addedBy: string;
+  addedAt: string;
+  permissions?: {
+    canManageUsers?: boolean;
+    canManageProjects?: boolean;
+    canManageTeam?: boolean;
+    canManageTestimonials?: boolean;
+    canManageContacts?: boolean;
+  };
+  notes?: string;
+}
+
 // Union type for all document types
 export type DatabaseDocument = 
   | TeamMember 
@@ -267,7 +289,8 @@ export type DatabaseDocument =
   | BlogPost 
   | AnalyticsEvent 
   | NewsletterSubscription 
-  | AppConfig;
+  | AppConfig 
+  | AdminUser;
 
 // Helper type to get document type by type field
 export type DocumentByType<T extends DatabaseDocument['type']> = Extract<DatabaseDocument, { type: T }>;
