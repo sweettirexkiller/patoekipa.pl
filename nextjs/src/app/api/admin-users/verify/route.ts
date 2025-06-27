@@ -13,6 +13,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { githubUsername, githubUserId } = body;
 
+    console.log('Verification request:', { githubUsername, githubUserId });
+
     if (!githubUsername || !githubUserId) {
       return NextResponse.json({ error: 'Missing githubUsername or githubUserId' }, { status: 400 });
     }
@@ -32,6 +34,11 @@ export async function POST(request: NextRequest) {
 
     if (users.length > 0) {
       const adminUser: AdminUser = users[0];
+      console.log('Found admin user in database:', { 
+        username: adminUser.githubUsername, 
+        role: adminUser.role,
+        isActive: adminUser.isActive 
+      });
       
       // Update last login time
       try {
@@ -45,18 +52,22 @@ export async function POST(request: NextRequest) {
         console.error('Error updating last login time:', error);
       }
 
-      return NextResponse.json({
+      const response = {
         githubUsername: adminUser.githubUsername,
         githubUserId: adminUser.githubUserId,
         displayName: adminUser.displayName,
         role: adminUser.role,
         permissions: adminUser.permissions
-      });
+      };
+      
+      console.log('Returning verification response:', response);
+      return NextResponse.json(response);
     }
 
     // Fallback to legacy whitelist for backward compatibility
     if (LEGACY_ALLOWED_ADMIN_USERS.includes(githubUsername)) {
-      return NextResponse.json({
+      console.log('Using legacy whitelist for user:', githubUsername);
+      const legacyResponse = {
         githubUsername,
         githubUserId,
         displayName: githubUsername,
@@ -68,10 +79,13 @@ export async function POST(request: NextRequest) {
           canManageTestimonials: true,
           canManageContacts: true,
         }
-      });
+      };
+      console.log('Returning legacy response:', legacyResponse);
+      return NextResponse.json(legacyResponse);
     }
 
     // User not found in database or legacy list
+    console.log('User not authorized:', githubUsername);
     return NextResponse.json({ error: 'Not authorized for admin access' }, { status: 401 });
 
   } catch (error) {

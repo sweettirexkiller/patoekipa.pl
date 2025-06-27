@@ -69,6 +69,7 @@ export default function AdminPage() {
           console.log('Extracted username:', username);
           
           // Now check with our backend API for authorization
+          console.log('Sending verification request for:', { username, userId: userInfo.user_id });
           const verifyResponse = await fetch('/api/admin-users/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -78,9 +79,12 @@ export default function AdminPage() {
             })
           });
           
+          console.log('Verification response status:', verifyResponse.status);
+          
           if (verifyResponse.ok) {
             const userData = await verifyResponse.json();
             console.log('User verification successful:', userData);
+            console.log('Setting user role to:', userData.role);
             
             setCurrentUser({
               githubUsername: userData.githubUsername,
@@ -91,11 +95,14 @@ export default function AdminPage() {
             });
             setIsAuthenticated(true);
           } else if (verifyResponse.status === 401) {
-            console.log('User not authorized for admin access:', username);
+            const errorData = await verifyResponse.json();
+            console.log('User not authorized for admin access:', username, errorData);
             setIsAuthenticated(false);
             setAuthError('Not authorized for admin access');
           } else {
             console.error('Verification failed:', verifyResponse.status);
+            const errorData = await verifyResponse.text();
+            console.error('Error response:', errorData);
             setIsAuthenticated(false);
             setAuthError('Authorization verification failed');
           }
