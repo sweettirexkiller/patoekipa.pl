@@ -1,9 +1,9 @@
 // Data Migration Script - Populate Database with Existing Portfolio Data
 
-import { cosmosOperations } from '../lib/cosmos';
-import { TeamMember, Project, Testimonial } from '../lib/database-schema';
+import { cosmosOperations } from '../src/lib/cosmos';
+import { TeamMember, Project, Testimonial } from '../src/lib/database-schema';
 import { nanoid } from 'nanoid';
-import portfolioData from '../../../shared/content/portfolio.json';
+import portfolioData from '../../shared/content/portfolio.json';
 
 // Sample testimonials from the current component
 const sampleTestimonials = [
