@@ -17,18 +17,6 @@ interface ClientPrincipal {
   userRoles: string[];
 }
 
-interface UserClaim {
-  typ: string;
-  val: string;
-}
-
-interface AzureAuthUser {
-  access_token: string;
-  provider_name: string;
-  user_claims: UserClaim[];
-  user_id: string;
-}
-
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -40,22 +28,33 @@ export default function AdminPage() {
       .then(response => response.json())
       .then(data => {
         console.log('Auth response:', data);
+        console.log('Auth response type:', typeof data);
+        console.log('Is array:', Array.isArray(data));
         
-        // Azure App Service v2 returns an array with user data
+        // Handle Azure App Service v2 format (array with user data)
         if (Array.isArray(data) && data.length > 0 && data[0].user_id) {
-          const userInfo: AzureAuthUser = data[0];
+          const userInfo = data[0];
+          console.log('User info from array:', userInfo);
+          
           setIsAuthenticated(true);
           
-          // Convert to expected format for compatibility
+          // Convert to expected ClientPrincipal format
           const clientPrincipal: ClientPrincipal = {
             identityProvider: userInfo.provider_name || 'github',
             userId: userInfo.user_id,
-            userDetails: userInfo.user_claims?.find((claim: UserClaim) => claim.typ === 'urn:github:login')?.val || 'Unknown User',
+            userDetails: userInfo.user_claims?.find((claim: any) => claim.typ === 'urn:github:login')?.val || 'Unknown User',
             userRoles: ['authenticated']
           };
           
           setUserInfo(clientPrincipal);
+        }
+        // Handle legacy format (if it exists)
+        else if (data.clientPrincipal && data.clientPrincipal.userId) {
+          console.log('Using legacy clientPrincipal format');
+          setIsAuthenticated(true);
+          setUserInfo(data.clientPrincipal);
         } else {
+          console.log('No authentication found, data:', data);
           setIsAuthenticated(false);
         }
       })
