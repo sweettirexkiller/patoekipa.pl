@@ -47,8 +47,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 3000
+# Azure App Service will set PORT environment variable
+# Default to 3000 if PORT is not set
+ENV PORT=${PORT:-3000}
+EXPOSE $PORT
 
-ENV PORT=3000
-
-CMD ["node", "server.js"] 
+CMD ["sh", "-c", "PORT=${PORT:-3000} node server.js"] 
