@@ -45,11 +45,18 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
+# Copy startup script and make it executable (before switching to nextjs user)
+COPY startup.sh ./
+RUN chmod +x startup.sh && chown nextjs:nodejs startup.sh
+
 USER nextjs
 
-# Azure App Service will set PORT environment variable
-# Default to 3000 if PORT is not set
-ENV PORT=${PORT:-3000}
+# Azure App Service uses port 80 or 8080 by default
+# Use WEBSITES_PORT environment variable if set, otherwise default to 8080
+ENV PORT=${WEBSITES_PORT:-8080}
 EXPOSE $PORT
 
-CMD ["sh", "-c", "PORT=${PORT:-3000} node server.js"] 
+# Set hostname to accept connections from all interfaces
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["./startup.sh"] 

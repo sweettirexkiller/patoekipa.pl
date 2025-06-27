@@ -14,6 +14,10 @@ const nextConfig = {
   poweredByHeader: false,
   trailingSlash: false,
   
+  // Ensure proper asset serving
+  assetPrefix: '',
+  basePath: '',
+  
   // Webpack configuration for better module resolution
   webpack: (config, { isServer }) => {
     // Ensure proper module resolution
