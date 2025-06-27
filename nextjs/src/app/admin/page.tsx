@@ -35,17 +35,29 @@ export default function AdminPage() {
         if (Array.isArray(data) && data.length > 0 && data[0].user_id) {
           const userInfo = data[0];
           console.log('User info from array:', userInfo);
+          console.log('User claims:', userInfo.user_claims);
           
-          setIsAuthenticated(true);
+          // Find GitHub username from claims
+          let username = 'Unknown User';
+          if (userInfo.user_claims && Array.isArray(userInfo.user_claims)) {
+            const loginClaim = userInfo.user_claims.find((claim: any) => claim.typ === 'urn:github:login');
+            console.log('Login claim:', loginClaim);
+            username = loginClaim?.val || userInfo.user_id;
+          }
+          
+          console.log('Extracted username:', username);
           
           // Convert to expected ClientPrincipal format
           const clientPrincipal: ClientPrincipal = {
             identityProvider: userInfo.provider_name || 'github',
             userId: userInfo.user_id,
-            userDetails: userInfo.user_claims?.find((claim: any) => claim.typ === 'urn:github:login')?.val || 'Unknown User',
+            userDetails: username,
             userRoles: ['authenticated']
           };
           
+          console.log('Created clientPrincipal:', clientPrincipal);
+          
+          setIsAuthenticated(true);
           setUserInfo(clientPrincipal);
         }
         // Handle legacy format (if it exists)
