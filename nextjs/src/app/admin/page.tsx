@@ -11,45 +11,45 @@ import AdminUsersManagement from '@/components/admin/AdminUsersManagement';
 
 type AdminSection = 'dashboard' | 'team' | 'projects' | 'testimonials' | 'contacts' | 'database' | 'users';
 
-interface ClientPrincipal {
-  identityProvider: string;
-  userId: string;
-  userDetails: string;
-  userRoles: string[];
+interface AuthenticatedUser {
+  githubUsername: string;
+  githubUserId: string;
+  displayName: string;
+  role: 'super_admin' | 'admin' | 'editor';
+  permissions?: {
+    canManageUsers?: boolean;
+    canManageProjects?: boolean;
+    canManageTeam?: boolean;
+    canManageTestimonials?: boolean;
+    canManageContacts?: boolean;
+  };
 }
-
-// Whitelist of allowed GitHub usernames
-const ALLOWED_ADMIN_USERS = [
-  'mozdowski',
-  // Add other GitHub usernames here
-  // 'teammate1',
-  // 'teammate2',
-];
 
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [userInfo, setUserInfo] = useState<ClientPrincipal | null>(null);
+  const [currentUser, setCurrentUser] = useState<AuthenticatedUser | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if we're already authenticated
-    fetch('/.auth/me')
-      .then(response => response.json())
-      .then(data => {
-        console.log('Auth response:', data);
-        console.log('Auth response type:', typeof data);
-        console.log('Is array:', Array.isArray(data));
+    // Check authentication status via our API
+    const checkAuth = async () => {
+      try {
+        // First get the authentication data from Azure App Service
+        const authResponse = await fetch('/.auth/me');
+        const authData = await authResponse.json();
+        
+        console.log('Auth response:', authData);
         
         // Handle case where response is a string that needs to be parsed
-        let parsedData = data;
-        if (typeof data === 'string') {
-          console.log('Response is string, parsing...');
+        let parsedData = authData;
+        if (typeof authData === 'string') {
           try {
-            parsedData = JSON.parse(data);
-            console.log('Parsed data:', parsedData);
+            parsedData = JSON.parse(authData);
           } catch (e) {
             console.error('Failed to parse JSON string:', e);
             setIsAuthenticated(false);
+            setAuthError('Authentication data parsing failed');
             return;
           }
         }
@@ -58,52 +58,59 @@ export default function AdminPage() {
         if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].user_id) {
           const userInfo = parsedData[0];
           console.log('User info from array:', userInfo);
-          console.log('User claims:', userInfo.user_claims);
           
           // Find GitHub username from claims
           let username = 'Unknown User';
           if (userInfo.user_claims && Array.isArray(userInfo.user_claims)) {
             const loginClaim = userInfo.user_claims.find((claim: any) => claim.typ === 'urn:github:login');
-            console.log('Login claim:', loginClaim);
             username = loginClaim?.val || userInfo.user_id;
           }
           
           console.log('Extracted username:', username);
           
-          // Convert to expected ClientPrincipal format
-          const clientPrincipal: ClientPrincipal = {
-            identityProvider: userInfo.provider_name || 'github',
-            userId: userInfo.user_id,
-            userDetails: username,
-            userRoles: ['authenticated']
-          };
+          // Now check with our backend API for authorization
+          const verifyResponse = await fetch('/api/admin-users/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              githubUsername: username,
+              githubUserId: userInfo.user_id
+            })
+          });
           
-          console.log('Created clientPrincipal:', clientPrincipal);
-          
-          // Check if user is in the allowed list
-          if (ALLOWED_ADMIN_USERS.includes(username)) {
-            console.log('User authorized for admin access:', username);
+          if (verifyResponse.ok) {
+            const userData = await verifyResponse.json();
+            console.log('User verification successful:', userData);
+            
+            setCurrentUser({
+              githubUsername: userData.githubUsername,
+              githubUserId: userData.githubUserId,
+              displayName: userData.displayName,
+              role: userData.role,
+              permissions: userData.permissions
+            });
             setIsAuthenticated(true);
-            setUserInfo(clientPrincipal);
-          } else {
+          } else if (verifyResponse.status === 401) {
             console.log('User not authorized for admin access:', username);
             setIsAuthenticated(false);
+            setAuthError('Not authorized for admin access');
+          } else {
+            console.error('Verification failed:', verifyResponse.status);
+            setIsAuthenticated(false);
+            setAuthError('Authorization verification failed');
           }
-        }
-        // Handle legacy format (if it exists)
-        else if (parsedData.clientPrincipal && parsedData.clientPrincipal.userId) {
-          console.log('Using legacy clientPrincipal format');
-          setIsAuthenticated(true);
-          setUserInfo(parsedData.clientPrincipal);
         } else {
-          console.log('No authentication found, parsedData:', parsedData);
+          console.log('No authentication found');
           setIsAuthenticated(false);
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error('Authentication error:', error);
         setIsAuthenticated(false);
-      });
+        setAuthError('Authentication check failed');
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   // Show loading while checking authentication
@@ -120,25 +127,20 @@ export default function AdminPage() {
 
   // Show login prompt if not authenticated
   if (!isAuthenticated) {
-    // Check if user was authenticated but not authorized
-    const isUnauthorized = userInfo && !ALLOWED_ADMIN_USERS.includes(userInfo.userDetails);
-    
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Panel Administracyjny</h1>
           
-          {isUnauthorized ? (
+          {authError ? (
             <>
               <div className="text-red-600 mb-4">
                 <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
-              <p className="text-red-600 mb-4 font-semibold">Brak uprawnień</p>
-              <p className="text-gray-600 mb-6">
-                Jesteś zalogowany jako <strong>{userInfo.userDetails}</strong>, ale nie masz uprawnień do panelu administracyjnego.
-              </p>
+              <p className="text-red-600 mb-4 font-semibold">Błąd autoryzacji</p>
+              <p className="text-gray-600 mb-6">{authError}</p>
               <a
                 href="/.auth/logout"
                 className="inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors"
@@ -167,7 +169,7 @@ export default function AdminPage() {
 
   const navigation = [
     { id: 'dashboard' as AdminSection, name: 'Dashboard', icon: '📊' },
-    { id: 'users' as AdminSection, name: 'Administratorzy', icon: '👤' },
+    ...(currentUser?.role === 'super_admin' ? [{ id: 'users' as AdminSection, name: 'Administratorzy', icon: '👤' }] : []),
     { id: 'team' as AdminSection, name: 'Zespół', icon: '👥' },
     { id: 'projects' as AdminSection, name: 'Projekty', icon: '🚀' },
     { id: 'testimonials' as AdminSection, name: 'Opinie', icon: '⭐' },
@@ -183,7 +185,7 @@ export default function AdminPage() {
             <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
             <div className="bg-white p-4 rounded-lg shadow mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Zalogowany jako:</h3>
-              <p className="text-gray-600">{userInfo?.userDetails} ({userInfo?.identityProvider})</p>
+              <p className="text-gray-600">{currentUser?.displayName} (@{currentUser?.githubUsername}) - {currentUser?.role}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
@@ -235,10 +237,10 @@ export default function AdminPage() {
           </div>
         );
       case 'users':
-        return <AdminUsersManagement currentUser={{
-          githubUsername: userInfo?.userDetails || '',
-          role: 'super_admin' // For now, all legacy users get super_admin role
-        }} />;
+        return <AdminUsersManagement currentUser={currentUser ? {
+          githubUsername: currentUser.githubUsername,
+          role: currentUser.role
+        } : undefined} />;
       case 'team':
         return <TeamManagement />;
       case 'projects':
