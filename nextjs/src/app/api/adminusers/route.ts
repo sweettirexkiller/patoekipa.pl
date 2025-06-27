@@ -3,6 +3,12 @@ import { getCosmosContainer } from '@/lib/cosmos';
 import { AdminUser } from '@/lib/database-schema';
 import { verifyAuth } from '@/lib/auth';
 
+// Legacy whitelist for backward compatibility during migration
+const LEGACY_ALLOWED_ADMIN_USERS = [
+  'mozdowski',
+  // Add other GitHub usernames here as needed
+];
+
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication and super_admin role
