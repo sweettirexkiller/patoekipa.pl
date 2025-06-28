@@ -31,6 +31,7 @@ export default function AdminPage() {
   const [currentUser, setCurrentUser] = useState<AuthenticatedUser | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isGitHubAuthenticated, setIsGitHubAuthenticated] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     // Check authentication status via our API
@@ -200,20 +201,27 @@ export default function AdminPage() {
     { id: 'projects' as AdminSection, name: 'Projekty', icon: '🚀' },
     { id: 'testimonials' as AdminSection, name: 'Opinie', icon: '⭐' },
     { id: 'contacts' as AdminSection, name: 'Kontakty', icon: '📧' },
-    { id: 'database' as AdminSection, name: 'Baza danych', icon: '🗄️' },
+    { id: 'database' as AdminSection, name: 'Baza danych', icon: '��️' },
   ];
+
+  const handleSectionChange = (section: AdminSection) => {
+    setActiveSection(section);
+    setIsMobileMenuOpen(false); // Close mobile menu when section changes
+  };
 
   const renderContent = () => {
     switch (activeSection) {
       case 'dashboard':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+            <div className="admin-desktop-header">
+              <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+            </div>
             <div className="bg-white p-4 rounded-lg shadow mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">Zalogowany jako:</h3>
               <p className="text-gray-600">{currentUser?.displayName} (@{currentUser?.githubUsername}) - {currentUser?.role}</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               <div className="bg-white p-6 rounded-lg shadow">
                 <div className="flex items-center">
                   <div className="p-2 bg-blue-100 rounded-lg">
@@ -284,10 +292,36 @@ export default function AdminPage() {
 
   return (
     <div className="admin-panel min-h-screen bg-gray-100">
+      {/* Mobile header */}
+      <div className="admin-mobile-header bg-white shadow-sm p-4 flex justify-between items-center md:hidden">
+        <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {isMobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="mobile-overlay md:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+          onTouchStart={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       <div className="flex h-screen">
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-lg">
-          <div className="p-6">
+        <div className={`admin-sidebar w-64 bg-white shadow-lg ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          <div className="p-6 admin-desktop-header">
             <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
             <p className="text-sm text-gray-600">Patoekipa</p>
           </div>
@@ -295,10 +329,10 @@ export default function AdminPage() {
             {navigation.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setActiveSection(item.id)}
+                onClick={() => handleSectionChange(item.id)}
                 className={`w-full text-left px-6 py-3 flex items-center space-x-3 transition-colors ${
                   activeSection === item.id
-                    ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'
+                    ? 'active bg-blue-50 text-blue-700 border-r-2 border-blue-700'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -310,7 +344,7 @@ export default function AdminPage() {
           <div className="absolute bottom-6 left-6">
             <a
               href="/.auth/logout"
-              className="text-red-600 hover:text-red-800 text-sm font-medium"
+              className="admin-logout-btn hover:text-red-800 text-sm font-medium"
             >
               Wyloguj się
             </a>
@@ -318,8 +352,15 @@ export default function AdminPage() {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto p-8">
+        <div className="admin-main-content flex-1 overflow-hidden">
+          {/* Mobile section header */}
+          <div className="admin-mobile-header bg-white shadow-sm p-4 md:hidden">
+            <h2 className="text-lg font-semibold text-gray-900">
+              {navigation.find(item => item.id === activeSection)?.name}
+            </h2>
+          </div>
+          
+          <div className="h-full overflow-y-auto p-4 md:p-8">
             {renderContent()}
           </div>
         </div>

@@ -22,21 +22,159 @@
   background-color: #ffffff !important; /* white */
 }
 
-/* Fix only navigation buttons - remove !important where possible */
-.admin-panel nav button {
+/* Fix navigation buttons specifically - be more precise with selectors */
+.admin-panel .admin-sidebar nav button {
   color: #374151; /* gray-700 */
 }
 
-.admin-panel nav button span {
+.admin-panel .admin-sidebar nav button span {
   color: inherit;
 }
 
 /* Active navigation button */
-.admin-panel nav button[class*="bg-blue-50"] {
+.admin-panel .admin-sidebar nav button.active {
   color: #1d4ed8; /* blue-700 */
 }
 
 /* Logout button */
-.admin-panel button[class*="text-red-"] {
-  color: #dc2626; /* red-600 */
+.admin-panel .admin-logout-btn {
+  color: #dc2626 !important; /* red-600 */
+}
+
+/* Ensure all headings and titles are visible */
+.admin-panel h1,
+.admin-panel h2,
+.admin-panel h3,
+.admin-panel h4,
+.admin-panel h5,
+.admin-panel h6 {
+  color: #111827 !important; /* gray-900 */
+}
+
+/* Ensure all text content is visible */
+.admin-panel p,
+.admin-panel span,
+.admin-panel div {
+  color: inherit;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .admin-panel {
+    min-height: 100vh;
+    min-height: 100dvh; /* Use dynamic viewport height for mobile browsers */
+  }
+  
+  .admin-panel .admin-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 50;
+  }
+  
+  .admin-panel .admin-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .admin-panel .admin-main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .admin-panel .admin-mobile-header {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    min-height: 60px; /* Ensure minimum touch target height */
+  }
+  
+  .admin-panel .admin-desktop-header {
+    display: none;
+  }
+  
+  /* Better touch targets for mobile */
+  .admin-panel .admin-sidebar nav button {
+    min-height: 48px; /* Minimum 48px for good touch targets */
+    padding: 12px 24px;
+  }
+  
+  /* Mobile content spacing */
+  .admin-panel .admin-main-content > div:last-child {
+    padding: 16px;
+  }
+  
+  /* Adjust grid layouts for mobile */
+  .admin-panel .grid {
+    gap: 1rem !important;
+  }
+  
+  .admin-panel .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+  
+  .admin-panel .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .admin-panel .admin-mobile-header {
+    display: none;
+  }
+  
+  .admin-panel .admin-desktop-header {
+    display: block;
+  }
+}
+
+/* Mobile overlay */
+.admin-panel .mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+}
+
+/* Ensure cards and content are properly styled */
+.admin-panel .bg-white {
+  background-color: #ffffff !important;
+}
+
+.admin-panel .text-gray-900 {
+  color: #111827 !important;
+}
+
+.admin-panel .text-gray-700 {
+  color: #374151 !important;
+}
+
+.admin-panel .text-gray-600 {
+  color: #4b5563 !important;
+}
+
+.admin-panel .text-gray-500 {
+  color: #6b7280 !important;
+}
+
+/* Form elements mobile improvements */
+@media (max-width: 768px) {
+  .admin-panel input,
+  .admin-panel textarea,
+  .admin-panel select {
+    font-size: 16px; /* Prevent zoom on iOS */
+    min-height: 44px; /* Better touch targets */
+  }
+  
+  .admin-panel button {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
 } 
