@@ -60,7 +60,7 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
   const fetchAdminUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/adminusers');
+      const response = await fetch('/api/admin-users');
       if (response.ok) {
         const users = await response.json();
         setAdminUsers(users);
@@ -79,7 +79,7 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
     setError(null);
 
     try {
-      const url = editingUser ? '/api/adminusers' : '/api/adminusers';
+      const url = editingUser ? '/api/admin-users' : '/api/admin-users';
       const method = editingUser ? 'PUT' : 'POST';
       const body = editingUser 
         ? { ...formData, id: editingUser.id }
@@ -130,7 +130,7 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
     }
 
     try {
-      const response = await fetch(`/api/adminusers?id=${user.id}`, {
+      const response = await fetch(`/api/admin-users?id=${user.id}`, {
         method: 'DELETE'
       });
 
@@ -147,7 +147,7 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
 
   const handleToggleActive = async (user: AdminUser) => {
     try {
-      const response = await fetch('/api/adminusers', {
+      const response = await fetch('/api/admin-users', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

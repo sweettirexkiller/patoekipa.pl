@@ -70,7 +70,7 @@ export default function AdminPage() {
           
           // Now check with our backend API for authorization
           console.log('Sending verification request for:', { username, userId: userInfo.user_id });
-          const verifyResponse = await fetch('/api/adminusers/verify', {
+          const verifyResponse = await fetch('/api/admin-users/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
