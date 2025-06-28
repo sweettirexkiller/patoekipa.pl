@@ -38,26 +38,39 @@ export default function AdminPage() {
       try {
         // First get the authentication data from Azure App Service
         const authResponse = await fetch('/.auth/me');
-        const authData = await authResponse.json();
+        
+        // Check if the response is successful and has content
+        if (!authResponse.ok) {
+          console.log('No authentication found (status:', authResponse.status, ')');
+          setIsAuthenticated(false);
+          setIsGitHubAuthenticated(false);
+          return;
+        }
+
+        const responseText = await authResponse.text();
+        if (!responseText.trim()) {
+          console.log('Empty authentication response');
+          setIsAuthenticated(false);
+          setIsGitHubAuthenticated(false);
+          return;
+        }
+
+        let authData;
+        try {
+          authData = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('Failed to parse authentication response:', parseError);
+          setIsAuthenticated(false);
+          setIsGitHubAuthenticated(false);
+          setAuthError('Błąd parsowania danych autoryzacji');
+          return;
+        }
         
         console.log('Auth response:', authData);
         
-        // Handle case where response is a string that needs to be parsed
-        let parsedData = authData;
-        if (typeof authData === 'string') {
-          try {
-            parsedData = JSON.parse(authData);
-          } catch (e) {
-            console.error('Failed to parse JSON string:', e);
-            setIsAuthenticated(false);
-            setAuthError('Authentication data parsing failed');
-            return;
-          }
-        }
-        
         // Handle Azure App Service v2 format (array with user data)
-        if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].user_id) {
-          const userInfo = parsedData[0];
+        if (Array.isArray(authData) && authData.length > 0 && authData[0].user_id) {
+          const userInfo = authData[0];
           console.log('User info from array:', userInfo);
           
           // User is authenticated via GitHub
