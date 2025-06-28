@@ -293,13 +293,14 @@ export default function AdminPage() {
   return (
     <div className="admin-panel min-h-screen bg-gray-100">
       {/* Mobile header */}
-      <div className="admin-mobile-header bg-white shadow-sm p-4 flex justify-between items-center md:hidden">
-        <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
+      <div className="admin-mobile-header md:hidden">
+        <h1>Admin Panel</h1>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+          className="mobile-menu-button"
+          aria-label={isMobileMenuOpen ? "Zamknij menu" : "Otwórz menu"}
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {isMobileMenuOpen ? (
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             ) : (
@@ -354,8 +355,8 @@ export default function AdminPage() {
         {/* Main content */}
         <div className="admin-main-content flex-1 overflow-hidden">
           {/* Mobile section header */}
-          <div className="admin-mobile-header bg-white shadow-sm p-4 md:hidden">
-            <h2 className="text-lg font-semibold text-gray-900">
+          <div className="mobile-section-header p-4 md:hidden">
+            <h2 className="text-lg font-semibold">
               {navigation.find(item => item.id === activeSection)?.name}
             </h2>
           </div>
