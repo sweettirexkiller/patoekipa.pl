@@ -53,7 +53,7 @@ USER nextjs
 
 # Azure App Service uses port 80 or 8080 by default
 # Use WEBSITES_PORT environment variable if set, otherwise default to 8080
-ENV PORT=${WEBSITES_PORT:-8080}
+ENV PORT=8080
 EXPOSE $PORT
 
 # Set hostname to accept connections from all interfaces
