@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCosmosContainer } from '@/lib/cosmos';
 import { AdminUser } from '@/lib/database-schema';
-import { verifyAuth } from '@/lib/auth';
 
 // Legacy whitelist for backward compatibility during migration
 const LEGACY_ALLOWED_ADMIN_USERS = [
@@ -9,10 +8,105 @@ const LEGACY_ALLOWED_ADMIN_USERS = [
   // Add other GitHub usernames here as needed
 ];
 
+// Helper function to verify authentication using Azure App Service
+async function verifyAdminAuth(request: NextRequest) {
+  try {
+    // Get the origin from the request to make internal calls
+    const origin = request.headers.get('origin') || 'https://patoekipa-portfolio.azurewebsites.net';
+    
+    // Make internal call to /.auth/me to get authentication data
+    const authResponse = await fetch(`${origin}/.auth/me`, {
+      headers: {
+        'Cookie': request.headers.get('Cookie') || '',
+        'User-Agent': request.headers.get('User-Agent') || ''
+      }
+    });
+
+    if (!authResponse.ok) {
+      return { isAuthenticated: false, user: null };
+    }
+
+    const responseText = await authResponse.text();
+    if (!responseText.trim()) {
+      return { isAuthenticated: false, user: null };
+    }
+
+    let authData;
+    try {
+      authData = JSON.parse(responseText);
+    } catch (parseError) {
+      return { isAuthenticated: false, user: null };
+    }
+
+    // Handle Azure App Service v2 format (array with user data)
+    if (Array.isArray(authData) && authData.length > 0 && authData[0].user_id) {
+      const userInfo = authData[0];
+      
+      // Find GitHub username from claims
+      let username = 'Unknown User';
+      if (userInfo.user_claims && Array.isArray(userInfo.user_claims)) {
+        const loginClaim = userInfo.user_claims.find((claim: any) => claim.typ === 'urn:github:login');
+        username = loginClaim?.val || userInfo.user_id;
+      }
+
+      // Check database for admin user
+      const container = getCosmosContainer();
+      const { resources: users } = await container.items
+        .query({
+          query: "SELECT * FROM c WHERE c.type = 'admin_user' AND (c.githubUsername = @username OR c.githubUserId = @userId) AND c.isActive = true",
+          parameters: [
+            { name: '@username', value: username },
+            { name: '@userId', value: userInfo.user_id }
+          ]
+        })
+        .fetchAll();
+
+      if (users.length > 0) {
+        const adminUser: AdminUser = users[0];
+        return {
+          isAuthenticated: true,
+          user: {
+            githubUsername: adminUser.githubUsername,
+            githubUserId: adminUser.githubUserId,
+            displayName: adminUser.displayName,
+            role: adminUser.role,
+            permissions: adminUser.permissions
+          }
+        };
+      }
+
+      // Fallback to legacy whitelist
+      if (LEGACY_ALLOWED_ADMIN_USERS.includes(username)) {
+        return {
+          isAuthenticated: true,
+          user: {
+            githubUsername: username,
+            githubUserId: userInfo.user_id,
+            displayName: username,
+            role: 'super_admin' as const,
+            permissions: {
+              canManageUsers: true,
+              canManageProjects: true,
+              canManageTeam: true,
+              canManageTestimonials: true,
+              canManageContacts: true,
+            }
+          }
+        };
+      }
+    }
+
+    return { isAuthenticated: false, user: null };
+  } catch (error) {
+    console.error('Error verifying admin auth:', error);
+    return { isAuthenticated: false, user: null };
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     // Verify authentication and super_admin role
-    const authResult = await verifyAuth(request);
+    const authResult = await verifyAdminAuth(request);
     if (!authResult.isAuthenticated || authResult.user?.role !== 'super_admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -34,7 +128,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Verify authentication and super_admin role
-    const authResult = await verifyAuth(request);
+    const authResult = await verifyAdminAuth(request);
     if (!authResult.isAuthenticated || authResult.user?.role !== 'super_admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -109,7 +203,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     // Verify authentication and super_admin role
-    const authResult = await verifyAuth(request);
+    const authResult = await verifyAdminAuth(request);
     if (!authResult.isAuthenticated || authResult.user?.role !== 'super_admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -175,7 +269,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     // Verify authentication and super_admin role
-    const authResult = await verifyAuth(request);
+    const authResult = await verifyAdminAuth(request);
     if (!authResult.isAuthenticated || authResult.user?.role !== 'super_admin') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
