@@ -30,6 +30,7 @@ export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [currentUser, setCurrentUser] = useState<AuthenticatedUser | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isGitHubAuthenticated, setIsGitHubAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
     // Check authentication status via our API
@@ -58,6 +59,9 @@ export default function AdminPage() {
         if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].user_id) {
           const userInfo = parsedData[0];
           console.log('User info from array:', userInfo);
+          
+          // User is authenticated via GitHub
+          setIsGitHubAuthenticated(true);
           
           // Find GitHub username from claims
           let username = 'Unknown User';
@@ -98,22 +102,24 @@ export default function AdminPage() {
             const errorData = await verifyResponse.json();
             console.log('User not authorized for admin access:', username, errorData);
             setIsAuthenticated(false);
-            setAuthError('Not authorized for admin access');
+            setAuthError(`Użytkownik "${username}" nie ma uprawnień do panelu administracyjnego.`);
           } else {
             console.error('Verification failed:', verifyResponse.status);
             const errorData = await verifyResponse.text();
             console.error('Error response:', errorData);
             setIsAuthenticated(false);
-            setAuthError('Authorization verification failed');
+            setAuthError('Błąd weryfikacji uprawnień administratora');
           }
         } else {
           console.log('No authentication found');
           setIsAuthenticated(false);
+          setIsGitHubAuthenticated(false);
         }
       } catch (error) {
         console.error('Authentication error:', error);
         setIsAuthenticated(false);
-        setAuthError('Authentication check failed');
+        setIsGitHubAuthenticated(false);
+        setAuthError('Błąd sprawdzania autoryzacji');
       }
     };
     
@@ -139,23 +145,36 @@ export default function AdminPage() {
         <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Panel Administracyjny</h1>
           
-          {authError ? (
+          {authError && isGitHubAuthenticated ? (
+            // User is authenticated via GitHub but not authorized for admin access
             <>
               <div className="text-red-600 mb-4">
                 <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               </div>
-              <p className="text-red-600 mb-4 font-semibold">Błąd autoryzacji</p>
+              <p className="text-red-600 mb-4 font-semibold">Brak uprawnień</p>
               <p className="text-gray-600 mb-6">{authError}</p>
-              <a
-                href="/.auth/logout"
-                className="inline-block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors"
-              >
-                Wyloguj się
-              </a>
+              <p className="text-sm text-gray-500 mb-6">
+                Jeśli uważasz, że powinieneś mieć dostęp do panelu administracyjnego, skontaktuj się z administratorem systemu.
+              </p>
+              <div className="space-y-3">
+                <a
+                  href="/.auth/logout"
+                  className="block bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Wyloguj się
+                </a>
+                <a
+                  href="/"
+                  className="block bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Wróć do strony głównej
+                </a>
+              </div>
             </>
           ) : (
+            // User is not authenticated at all
             <>
               <p className="text-gray-600 mb-6">Musisz się zalogować przez GitHub, aby uzyskać dostęp do panelu administracyjnego.</p>
               <a
@@ -167,6 +186,9 @@ export default function AdminPage() {
                 </svg>
                 Zaloguj się przez GitHub
               </a>
+              {authError && !isGitHubAuthenticated && (
+                <p className="text-red-500 text-sm mt-4">{authError}</p>
+              )}
             </>
           )}
         </div>
