@@ -2,16 +2,17 @@ const config = {
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
-    cssnano: {
-      preset: ['default', {
-        discardComments: {
-          removeAll: true,
-        },
-        // Keep important CSS features for static export
-        reduceIdents: false,
-        zindex: false,
-      }],
-    },
+    // Temporarily disable cssnano due to build issues
+    // cssnano: {
+    //   preset: ['default', {
+    //     discardComments: {
+    //       removeAll: true,
+    //     },
+    //     // Keep important CSS features for static export
+    //     reduceIdents: false,
+    //     zindex: false,
+    //   }],
+    // },
   },
 };
 

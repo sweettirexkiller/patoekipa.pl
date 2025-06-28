@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Install ALL dependencies (including dev) for building
 COPY package.json ./
-RUN npm install --legacy-peer-deps
+RUN npm cache clean --force && npm install --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM node:18-alpine AS builder
