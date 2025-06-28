@@ -41,7 +41,6 @@ export default function AdminPage() {
         
         // Check if the response is successful and has content
         if (!authResponse.ok) {
-          console.log('No authentication found (status:', authResponse.status, ')');
           setIsAuthenticated(false);
           setIsGitHubAuthenticated(false);
           return;
@@ -49,7 +48,6 @@ export default function AdminPage() {
 
         const responseText = await authResponse.text();
         if (!responseText.trim()) {
-          console.log('Empty authentication response');
           setIsAuthenticated(false);
           setIsGitHubAuthenticated(false);
           return;
@@ -65,13 +63,10 @@ export default function AdminPage() {
           setAuthError('Błąd parsowania danych autoryzacji');
           return;
         }
-        
-        console.log('Auth response:', authData);
-        
+                
         // Handle Azure App Service v2 format (array with user data)
         if (Array.isArray(authData) && authData.length > 0 && authData[0].user_id) {
           const userInfo = authData[0];
-          console.log('User info from array:', userInfo);
           
           // User is authenticated via GitHub
           setIsGitHubAuthenticated(true);
@@ -83,10 +78,6 @@ export default function AdminPage() {
             username = loginClaim?.val || userInfo.user_id;
           }
           
-          console.log('Extracted username:', username);
-          
-          // Now check with our backend API for authorization
-          console.log('Sending verification request for:', { username, userId: userInfo.user_id });
           const verifyResponse = await fetch('/api/admin-users/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -95,13 +86,9 @@ export default function AdminPage() {
               githubUserId: userInfo.user_id
             })
           });
-          
-          console.log('Verification response status:', verifyResponse.status);
-          
+                    
           if (verifyResponse.ok) {
             const userData = await verifyResponse.json();
-            console.log('User verification successful:', userData);
-            console.log('Setting user role to:', userData.role);
             
             setCurrentUser({
               githubUsername: userData.githubUsername,
@@ -113,7 +100,6 @@ export default function AdminPage() {
             setIsAuthenticated(true);
           } else if (verifyResponse.status === 401) {
             const errorData = await verifyResponse.json();
-            console.log('User not authorized for admin access:', username, errorData);
             setIsAuthenticated(false);
             setAuthError(`Użytkownik "${username}" nie ma uprawnień do panelu administracyjnego.`);
           } else {
@@ -124,12 +110,10 @@ export default function AdminPage() {
             setAuthError('Błąd weryfikacji uprawnień administratora');
           }
         } else {
-          console.log('No authentication found');
           setIsAuthenticated(false);
           setIsGitHubAuthenticated(false);
         }
       } catch (error) {
-        console.error('Authentication error:', error);
         setIsAuthenticated(false);
         setIsGitHubAuthenticated(false);
         setAuthError('Błąd sprawdzania autoryzacji');
