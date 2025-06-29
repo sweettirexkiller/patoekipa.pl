@@ -239,47 +239,117 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
 
       {/* Admin Users List */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Last Login
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {adminUsers.map((user) => (
-              <tr key={user.id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.displayName}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        @{user.githubUsername}
-                      </div>
-                      {user.email && (
-                        <div className="text-sm text-gray-500">
-                          {user.email}
+        {/* Desktop Table */}
+        <div className="table-container">
+          <table className="mobile-hide-table min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  User
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Role
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Last Login
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {adminUsers.map((user) => (
+                <tr key={user.id}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {user.displayName}
                         </div>
-                      )}
+                        <div className="text-sm text-gray-500">
+                          @{user.githubUsername}
+                        </div>
+                        {user.email && (
+                          <div className="text-sm text-gray-500">
+                            {user.email}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      user.role === 'super_admin' 
+                        ? 'bg-purple-100 text-purple-800'
+                        : user.role === 'admin'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {user.role.replace('_', ' ')}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      user.isActive
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}>
+                      {user.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.lastLoginAt 
+                      ? new Date(user.lastLoginAt).toLocaleDateString()
+                      : 'Never'
+                    }
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleToggleActive(user)}
+                      className={user.isActive 
+                        ? "text-yellow-600 hover:text-yellow-900"
+                        : "text-green-600 hover:text-green-900"
+                      }
+                    >
+                      {user.isActive ? 'Deactivate' : 'Activate'}
+                    </button>
+                    <button
+                      onClick={() => handleDelete(user)}
+                      className="text-red-600 hover:text-red-900"
+                      disabled={user.githubUsername === currentUser?.githubUsername}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Mobile Cards */}
+        <div className="mobile-table-cards" style={{ display: 'none' }}>
+          {adminUsers.map((user) => (
+            <div key={user.id} className="mobile-card">
+              <div className="mobile-card-header">
+                <div>
+                  <div className="mobile-card-title">{user.displayName}</div>
+                  <div className="mobile-card-subtitle">@{user.githubUsername}</div>
+                  {user.email && (
+                    <div className="mobile-card-subtitle">{user.email}</div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                     user.role === 'super_admin' 
                       ? 'bg-purple-100 text-purple-800'
@@ -289,8 +359,6 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
                   }`}>
                     {user.role.replace('_', ' ')}
                   </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                     user.isActive
                       ? 'bg-green-100 text-green-800'
@@ -298,41 +366,48 @@ const AdminUsersManagement = ({ currentUser }: AdminUsersManagementProps) => {
                   }`}>
                     {user.isActive ? 'Active' : 'Inactive'}
                   </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.lastLoginAt 
-                    ? new Date(user.lastLoginAt).toLocaleDateString()
-                    : 'Never'
-                  }
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                  <button
-                    onClick={() => handleEdit(user)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleToggleActive(user)}
-                    className={user.isActive 
-                      ? "text-yellow-600 hover:text-yellow-900"
-                      : "text-green-600 hover:text-green-900"
+                </div>
+              </div>
+              
+              <div className="mobile-card-content">
+                <div className="mobile-card-field">
+                  <span className="mobile-card-label">Last Login:</span>
+                  <span className="mobile-card-value">
+                    {user.lastLoginAt 
+                      ? new Date(user.lastLoginAt).toLocaleDateString()
+                      : 'Never'
                     }
-                  >
-                    {user.isActive ? 'Deactivate' : 'Activate'}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user)}
-                    className="text-red-600 hover:text-red-900"
-                    disabled={user.githubUsername === currentUser?.githubUsername}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </span>
+                </div>
+              </div>
+              
+              <div className="mobile-card-actions">
+                <button
+                  onClick={() => handleEdit(user)}
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleToggleActive(user)}
+                  className={user.isActive 
+                    ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                    : "bg-green-600 text-white hover:bg-green-700"
+                  }
+                >
+                  {user.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+                <button
+                  onClick={() => handleDelete(user)}
+                  className="bg-red-600 text-white hover:bg-red-700"
+                  disabled={user.githubUsername === currentUser?.githubUsername}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {adminUsers.length === 0 && (
           <div className="p-6 text-center text-gray-500">

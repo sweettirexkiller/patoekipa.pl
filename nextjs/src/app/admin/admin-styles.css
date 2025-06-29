@@ -58,6 +58,300 @@
   color: inherit;
 }
 
+/* BADGE AND TAG VISIBILITY FIXES */
+/* Green badges/tags */
+.admin-panel .bg-green-100 {
+  background-color: #dcfce7 !important; /* green-100 */
+}
+
+.admin-panel .text-green-800 {
+  color: #166534 !important; /* green-800 */
+}
+
+.admin-panel .text-green-700 {
+  color: #15803d !important; /* green-700 */
+}
+
+.admin-panel .text-green-600 {
+  color: #16a34a !important; /* green-600 */
+}
+
+/* Blue badges/tags */
+.admin-panel .bg-blue-100 {
+  background-color: #dbeafe !important; /* blue-100 */
+}
+
+.admin-panel .text-blue-800 {
+  color: #1e40af !important; /* blue-800 */
+}
+
+.admin-panel .text-blue-700 {
+  color: #1d4ed8 !important; /* blue-700 */
+}
+
+.admin-panel .text-blue-600 {
+  color: #2563eb !important; /* blue-600 */
+}
+
+/* Yellow badges/tags */
+.admin-panel .bg-yellow-100 {
+  background-color: #fef3c7 !important; /* yellow-100 */
+}
+
+.admin-panel .text-yellow-800 {
+  color: #92400e !important; /* yellow-800 */
+}
+
+.admin-panel .text-yellow-700 {
+  color: #a16207 !important; /* yellow-700 */
+}
+
+.admin-panel .text-yellow-600 {
+  color: #ca8a04 !important; /* yellow-600 */
+}
+
+/* Red badges/tags */
+.admin-panel .bg-red-100 {
+  background-color: #fee2e2 !important; /* red-100 */
+}
+
+.admin-panel .text-red-800 {
+  color: #991b1b !important; /* red-800 */
+}
+
+.admin-panel .text-red-700 {
+  color: #b91c1c !important; /* red-700 */
+}
+
+.admin-panel .text-red-600 {
+  color: #dc2626 !important; /* red-600 */
+}
+
+/* Purple badges/tags */
+.admin-panel .bg-purple-100 {
+  background-color: #f3e8ff !important; /* purple-100 */
+}
+
+.admin-panel .text-purple-800 {
+  color: #6b21a8 !important; /* purple-800 */
+}
+
+.admin-panel .text-purple-700 {
+  color: #7c3aed !important; /* purple-700 */
+}
+
+/* Orange badges/tags */
+.admin-panel .bg-orange-100 {
+  background-color: #fed7aa !important; /* orange-100 */
+}
+
+.admin-panel .text-orange-800 {
+  color: #9a3412 !important; /* orange-800 */
+}
+
+.admin-panel .text-orange-700 {
+  color: #c2410c !important; /* orange-700 */
+}
+
+/* Gray badges/tags */
+.admin-panel .bg-gray-100 {
+  background-color: #f3f4f6 !important; /* gray-100 */
+}
+
+.admin-panel .text-gray-800 {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+.admin-panel .text-gray-700 {
+  color: #374151 !important; /* gray-700 */
+}
+
+.admin-panel .text-gray-600 {
+  color: #4b5563 !important; /* gray-600 */
+}
+
+.admin-panel .text-gray-500 {
+  color: #6b7280 !important; /* gray-500 */
+}
+
+/* Specific badge styling to ensure proper visibility */
+.admin-panel span[class*="px-2"][class*="py-1"][class*="text-xs"] {
+  font-weight: 600 !important;
+  border: 1px solid transparent;
+}
+
+/* Enhanced contrast for rounded-full badges */
+.admin-panel .rounded-full.bg-green-100 {
+  border: 1px solid #bbf7d0 !important; /* green-200 */
+}
+
+.admin-panel .rounded-full.bg-blue-100 {
+  border: 1px solid #bfdbfe !important; /* blue-200 */
+}
+
+.admin-panel .rounded-full.bg-yellow-100 {
+  border: 1px solid #fde68a !important; /* yellow-200 */
+}
+
+.admin-panel .rounded-full.bg-red-100 {
+  border: 1px solid #fecaca !important; /* red-200 */
+}
+
+.admin-panel .rounded-full.bg-purple-100 {
+  border: 1px solid #e9d5ff !important; /* purple-200 */
+}
+
+.admin-panel .rounded-full.bg-orange-100 {
+  border: 1px solid #fed7aa !important; /* orange-200 */
+}
+
+.admin-panel .rounded-full.bg-gray-100 {
+  border: 1px solid #e5e7eb !important; /* gray-200 */
+}
+
+/* MOBILE TABLE RESPONSIVENESS */
+/* Desktop table styling */
+.admin-panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-panel table th,
+.admin-panel table td {
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Mobile table improvements */
+@media (max-width: 768px) {
+  /* Hide table on mobile and show card layout instead */
+  .admin-panel .mobile-hide-table {
+    display: none !important;
+  }
+  
+  /* Mobile card layout for table data */
+  .admin-panel .mobile-table-cards {
+    display: block !important;
+  }
+  
+  /* Horizontal scroll for tables that can't be converted to cards */
+  .admin-panel .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-panel .table-container table {
+    min-width: 600px; /* Minimum width to prevent cramping */
+  }
+  
+  .admin-panel .table-container th,
+  .admin-panel .table-container td {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+  
+  .admin-panel .table-container th {
+    white-space: nowrap;
+    font-size: 12px !important;
+  }
+  
+  /* Action buttons in tables */
+  .admin-panel .table-container td button {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    margin: 0 2px !important;
+  }
+  
+  /* Mobile card styling for converted tables */
+  .admin-panel .mobile-card {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+  }
+  
+  .admin-panel .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  .admin-panel .mobile-card-title {
+    font-weight: 600;
+    color: #111827;
+    font-size: 16px;
+  }
+  
+  .admin-panel .mobile-card-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+  
+  .admin-panel .mobile-card-content {
+    space-y: 8px;
+  }
+  
+  .admin-panel .mobile-card-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+  }
+  
+  .admin-panel .mobile-card-label {
+    font-weight: 500;
+    color: #374151;
+    font-size: 14px;
+    min-width: 80px;
+  }
+  
+  .admin-panel .mobile-card-value {
+    color: #111827;
+    font-size: 14px;
+    text-align: right;
+    flex: 1;
+    margin-left: 12px;
+  }
+  
+  .admin-panel .mobile-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6;
+  }
+  
+  .admin-panel .mobile-card-actions button {
+    flex: 1;
+    min-width: 80px;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    text-align: center;
+  }
+}
+
+/* Desktop: hide mobile cards */
+@media (min-width: 769px) {
+  .admin-panel .mobile-table-cards {
+    display: none !important;
+  }
+  
+  .admin-panel .mobile-hide-table {
+    display: table !important;
+  }
+}
+
 /* Mobile header improvements */
 .admin-panel .admin-mobile-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -178,6 +472,21 @@
   .admin-panel .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
+  
+  /* Mobile action buttons layout */
+  .admin-panel .flex.justify-between.items-center {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  
+  .admin-panel .flex.justify-between.items-center h2 {
+    text-align: center;
+  }
+  
+  .admin-panel .flex.justify-between.items-center button {
+    width: 100% !important;
+  }
 }
 
 @media (min-width: 769px) {
@@ -205,22 +514,6 @@
 /* Ensure cards and content are properly styled */
 .admin-panel .bg-white {
   background-color: #ffffff !important;
-}
-
-.admin-panel .text-gray-900 {
-  color: #111827 !important;
-}
-
-.admin-panel .text-gray-700 {
-  color: #374151 !important;
-}
-
-.admin-panel .text-gray-600 {
-  color: #4b5563 !important;
-}
-
-.admin-panel .text-gray-500 {
-  color: #6b7280 !important;
 }
 
 /* Form elements mobile improvements */

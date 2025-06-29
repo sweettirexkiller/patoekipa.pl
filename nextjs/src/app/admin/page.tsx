@@ -201,7 +201,7 @@ export default function AdminPage() {
     { id: 'projects' as AdminSection, name: 'Projekty', icon: '🚀' },
     { id: 'testimonials' as AdminSection, name: 'Opinie', icon: '⭐' },
     { id: 'contacts' as AdminSection, name: 'Kontakty', icon: '📧' },
-    { id: 'database' as AdminSection, name: 'Baza danych', icon: '��️' },
+    { id: 'database' as AdminSection, name: 'Baza danych', icon: '🗂' },
   ];
 
   const handleSectionChange = (section: AdminSection) => {
