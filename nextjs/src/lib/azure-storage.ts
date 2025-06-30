@@ -5,20 +5,28 @@ const AZURE_STORAGE_ACCOUNT_NAME = process.env.AZURE_STORAGE_ACCOUNT_NAME;
 const AZURE_STORAGE_ACCOUNT_KEY = process.env.AZURE_STORAGE_ACCOUNT_KEY;
 const AZURE_STORAGE_CONTAINER_NAME = process.env.AZURE_STORAGE_CONTAINER_NAME || 'avatars';
 
-if (!AZURE_STORAGE_ACCOUNT_NAME || !AZURE_STORAGE_ACCOUNT_KEY) {
-  throw new Error('Azure Storage credentials are not configured. Please set AZURE_STORAGE_ACCOUNT_NAME and AZURE_STORAGE_ACCOUNT_KEY environment variables.');
+let blobServiceClient: BlobServiceClient | null = null;
+
+// Lazy initialization of BlobServiceClient
+function getBlobServiceClient(): BlobServiceClient {
+  if (!AZURE_STORAGE_ACCOUNT_NAME || !AZURE_STORAGE_ACCOUNT_KEY) {
+    throw new Error('Azure Storage credentials are not configured. Please set AZURE_STORAGE_ACCOUNT_NAME and AZURE_STORAGE_ACCOUNT_KEY environment variables.');
+  }
+
+  if (!blobServiceClient) {
+    const sharedKeyCredential = new StorageSharedKeyCredential(
+      AZURE_STORAGE_ACCOUNT_NAME,
+      AZURE_STORAGE_ACCOUNT_KEY
+    );
+
+    blobServiceClient = new BlobServiceClient(
+      `https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net`,
+      sharedKeyCredential
+    );
+  }
+
+  return blobServiceClient;
 }
-
-// Create the BlobServiceClient
-const sharedKeyCredential = new StorageSharedKeyCredential(
-  AZURE_STORAGE_ACCOUNT_NAME,
-  AZURE_STORAGE_ACCOUNT_KEY
-);
-
-const blobServiceClient = new BlobServiceClient(
-  `https://${AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net`,
-  sharedKeyCredential
-);
 
 export interface UploadResult {
   success: boolean;
@@ -33,8 +41,11 @@ export async function uploadAvatarToBlob(
   contentType: string
 ): Promise<UploadResult> {
   try {
+    // Get blob service client (lazy initialization)
+    const client = getBlobServiceClient();
+    
     // Get container client
-    const containerClient = blobServiceClient.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
+    const containerClient = client.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
     
     // Ensure container exists (create if it doesn't)
     await containerClient.createIfNotExists({
@@ -76,7 +87,8 @@ export async function uploadAvatarToBlob(
 
 export async function deleteAvatarFromBlob(filename: string): Promise<boolean> {
   try {
-    const containerClient = blobServiceClient.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
+    const client = getBlobServiceClient();
+    const containerClient = client.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
     const blobClient = containerClient.getBlockBlobClient(filename);
     
     await blobClient.deleteIfExists();
@@ -89,7 +101,8 @@ export async function deleteAvatarFromBlob(filename: string): Promise<boolean> {
 
 export async function listAvatars(): Promise<string[]> {
   try {
-    const containerClient = blobServiceClient.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
+    const client = getBlobServiceClient();
+    const containerClient = client.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
     const avatars: string[] = [];
     
     for await (const blob of containerClient.listBlobsFlat()) {
@@ -106,7 +119,13 @@ export async function listAvatars(): Promise<string[]> {
 // Health check function
 export async function checkAzureStorageConnection(): Promise<boolean> {
   try {
-    const containerClient = blobServiceClient.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
+    // Check if credentials are available first
+    if (!AZURE_STORAGE_ACCOUNT_NAME || !AZURE_STORAGE_ACCOUNT_KEY) {
+      return false;
+    }
+
+    const client = getBlobServiceClient();
+    const containerClient = client.getContainerClient(AZURE_STORAGE_CONTAINER_NAME);
     await containerClient.getProperties();
     return true;
   } catch (error) {

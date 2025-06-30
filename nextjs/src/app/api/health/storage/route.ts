@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAuth, createAuthResponse } from '@/lib/auth';
 import { checkAzureStorageConnection, listAvatars } from '@/lib/azure-storage';
 
+// Mark this route as dynamic since it uses request headers for auth
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   // Check admin authorization
   const auth = await verifyAuth(request);
@@ -14,6 +17,26 @@ export async function GET(request: NextRequest) {
 
   try {
     const startTime = Date.now();
+    
+    // Check if Azure Storage is configured
+    const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+    const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
+    
+    if (!accountName || !accountKey) {
+      return NextResponse.json({
+        success: false,
+        status: 'not_configured',
+        data: {
+          connected: false,
+          error: 'Azure Storage credentials not configured',
+          missingVars: [
+            !accountName ? 'AZURE_STORAGE_ACCOUNT_NAME' : null,
+            !accountKey ? 'AZURE_STORAGE_ACCOUNT_KEY' : null
+          ].filter(Boolean),
+          timestamp: new Date().toISOString()
+        }
+      }, { status: 503 });
+    }
     
     // Test connection
     const isConnected = await checkAzureStorageConnection();

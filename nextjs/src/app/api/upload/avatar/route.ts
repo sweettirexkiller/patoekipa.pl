@@ -3,6 +3,9 @@ import { verifyAuth, createAuthResponse } from '@/lib/auth';
 import { uploadAvatarToBlob, deleteAvatarFromBlob } from '@/lib/azure-storage';
 import { nanoid } from 'nanoid';
 
+// Mark this route as dynamic since it uses request headers for auth and handles file uploads
+export const dynamic = 'force-dynamic';
+
 // Allowed image types
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -18,6 +21,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Check if Azure Storage is configured
+    if (!process.env.AZURE_STORAGE_ACCOUNT_NAME || !process.env.AZURE_STORAGE_ACCOUNT_KEY) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Azure Storage not configured. Please contact administrator to set up file upload functionality.' 
+        },
+        { status: 503 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('avatar') as File;
 
@@ -81,7 +95,7 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message.includes('Azure Storage credentials')) {
       return NextResponse.json(
         { success: false, error: 'Azure Storage not configured. Please contact administrator.' },
-        { status: 500 }
+        { status: 503 }
       );
     }
 
@@ -104,6 +118,17 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
+    // Check if Azure Storage is configured
+    if (!process.env.AZURE_STORAGE_ACCOUNT_NAME || !process.env.AZURE_STORAGE_ACCOUNT_KEY) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Azure Storage not configured. Please contact administrator.' 
+        },
+        { status: 503 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const filename = searchParams.get('filename');
 
