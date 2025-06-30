@@ -61,11 +61,36 @@ function MemberCard({ member, index }: { member: TeamMember; index: number }) {
               
               <div className="relative z-10 flex flex-col items-center">
                 <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                  <div className="w-full h-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <svg className="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                    </svg>
-                  </div>
+                  {member.avatar ? (
+                    <img
+                      src={member.avatar}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to placeholder on image load error
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        target.parentElement!.innerHTML = `
+                          <div class="w-full h-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <svg class="w-16 h-16 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                          </div>
+                        `;
+                      }}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <div className="flex flex-col items-center">
+                        <svg className="w-16 h-16 text-white/80 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-white/60 text-xs font-medium">
+                          {member.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Role Badge */}

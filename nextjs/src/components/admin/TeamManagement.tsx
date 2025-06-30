@@ -202,11 +202,85 @@ function TeamMemberForm({ member, onSave, onCancel }: TeamMemberFormProps) {
     availability: member?.availability || 'available',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>(member?.avatar || '');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Nieprawidłowy format pliku. Dozwolone są tylko JPEG, PNG i WebP.');
+        return;
+      }
+
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Plik jest za duży. Maksymalny rozmiar to 5MB.');
+        return;
+      }
+
+      setAvatarFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAvatarPreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadAvatar = async (): Promise<string | null> => {
+    if (!avatarFile) return null;
+
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', avatarFile);
+
+      const response = await fetch('/api/upload/avatar', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        return result.data.avatarUrl;
+      } else {
+        throw new Error(result.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      alert('Błąd podczas przesyłania zdjęcia: ' + (error as Error).message);
+      return null;
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    let avatarUrl = formData.avatar;
+
+    // Upload new avatar if one was selected
+    if (avatarFile) {
+      const uploadedUrl = await uploadAvatar();
+      if (uploadedUrl) {
+        avatarUrl = uploadedUrl;
+      } else {
+        // Upload failed, don't proceed
+        return;
+      }
+    }
     
     const submitData: Partial<TeamMember> = {
       ...formData,
+      avatar: avatarUrl,
       skills: formData.skills.split(',').map(s => s.trim()).filter(s => s),
       certifications: formData.certifications.split(',').map(s => s.trim()).filter(s => s),
       languages: formData.languages.split(',').map(s => s.trim()).filter(s => s),
@@ -291,16 +365,76 @@ function TeamMemberForm({ member, onSave, onCancel }: TeamMemberFormProps) {
           </div>
           
           <div>
-            <label htmlFor="avatar" className="block text-sm font-medium text-gray-700">
-              URL zdjęcia
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Zdjęcie profilowe
             </label>
-            <input
-              type="url"
-              id="avatar"
-              value={formData.avatar}
-              onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            
+            {/* Image Preview */}
+            <div className="mb-4">
+              {avatarPreview ? (
+                <div className="relative inline-block">
+                  <img
+                    src={avatarPreview}
+                    alt="Podgląd"
+                    className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    onError={() => {
+                      setAvatarPreview('');
+                      setFormData({ ...formData, avatar: '' });
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatarPreview('');
+                      setAvatarFile(null);
+                      setFormData({ ...formData, avatar: '' });
+                    }}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-gray-200 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+              )}
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <label htmlFor="avatar-upload" className="block text-sm font-medium text-gray-700 mb-1">
+                Wybierz plik (JPEG, PNG, WebP, max 5MB)
+              </label>
+              <input
+                type="file"
+                id="avatar-upload"
+                accept="image/jpeg,image/jpg,image/png,image/webp"
+                onChange={handleAvatarChange}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+
+            {/* Alternative: URL Input */}
+            <div className="mt-4">
+              <label htmlFor="avatar-url" className="block text-sm font-medium text-gray-700">
+                Lub podaj URL zdjęcia
+              </label>
+              <input
+                type="url"
+                id="avatar-url"
+                value={formData.avatar}
+                onChange={(e) => {
+                  setFormData({ ...formData, avatar: e.target.value });
+                  setAvatarPreview(e.target.value);
+                  setAvatarFile(null);
+                }}
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://example.com/avatar.jpg"
+              />
+            </div>
           </div>
           
           <div>
@@ -377,15 +511,27 @@ function TeamMemberForm({ member, onSave, onCancel }: TeamMemberFormProps) {
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            disabled={uploadingAvatar}
+            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Anuluj
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            disabled={uploadingAvatar}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            {member ? 'Zapisz zmiany' : 'Dodaj członka'}
+            {uploadingAvatar ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Przesyłanie...
+              </>
+            ) : (
+              member ? 'Zapisz zmiany' : 'Dodaj członka'
+            )}
           </button>
         </div>
       </form>
