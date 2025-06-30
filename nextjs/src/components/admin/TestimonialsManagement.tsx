@@ -152,12 +152,9 @@ export function TestimonialsManagement() {
                     <div className="flex items-center space-x-2">
                       <h3 className="text-sm font-medium text-gray-900">{testimonial.name}</h3>
                       <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
+                        {[...Array(testimonial.rating)].map((_, i) => (
                           <span
                             key={i}
-                            className={`text-sm ${
-                              i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'
-                            }`}
                           >
                             ⭐
                           </span>
