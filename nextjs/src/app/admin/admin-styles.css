@@ -67,6 +67,15 @@
   color: #d1d5db !important; /* gray-300 */
 }
 
+/* Fix star rating colors - override the inherit rule for star elements */
+.admin-panel .text-yellow-400 {
+  color: #fbbf24 !important; /* yellow-400 */
+}
+
+.admin-panel .text-gray-300 {
+  color: #d1d5db !important; /* gray-300 */
+}
+
 /* BADGE AND TAG VISIBILITY FIXES */
 /* Green badges/tags */
 .admin-panel .bg-green-100 {
