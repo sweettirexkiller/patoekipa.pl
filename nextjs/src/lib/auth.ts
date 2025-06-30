@@ -52,77 +52,229 @@ async function getAdminUserFromDatabase(githubUsername: string, githubUserId: st
   }
 }
 
-export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
+// Alternative method using /.auth/me endpoint
+async function getAuthFromEndpoint(request: NextRequest): Promise<AuthResult> {
   try {
-    // Get authentication data from Azure App Service headers
-    const authHeader = request.headers.get('x-ms-client-principal');
+    // Get the base URL from the request
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('host');
+    const baseUrl = `${protocol}://${host}`;
     
-    if (!authHeader) {
+    // Make internal call to /.auth/me
+    const authResponse = await fetch(`${baseUrl}/.auth/me`, {
+      headers: {
+        'Cookie': request.headers.get('Cookie') || '',
+        'User-Agent': request.headers.get('User-Agent') || 'NextJS-Internal'
+      }
+    });
+
+    if (!authResponse.ok) {
+      console.log('Auth endpoint not available or returned error:', authResponse.status);
       return { isAuthenticated: false, isAuthorized: false };
     }
 
-    // Decode the base64 encoded auth data
-    const authData = JSON.parse(Buffer.from(authHeader, 'base64').toString());
-    
-    if (!authData || !Array.isArray(authData) || authData.length === 0) {
+    const responseText = await authResponse.text();
+    if (!responseText.trim()) {
+      console.log('Auth endpoint returned empty response');
       return { isAuthenticated: false, isAuthorized: false };
     }
 
-    const userInfo: AzureAuthUser = authData[0];
-    
-    if (!userInfo.user_id) {
+    let authData;
+    try {
+      authData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.log('Failed to parse auth response:', parseError);
       return { isAuthenticated: false, isAuthorized: false };
     }
 
-    // Extract GitHub username
-    const loginClaim = userInfo.user_claims?.find(
-      claim => claim.typ === 'urn:github:login'
-    );
-    const username = loginClaim?.val || userInfo.user_id;
-
-    // First check database for admin user
-    const adminUser = await getAdminUserFromDatabase(username, userInfo.user_id);
-    
-    if (adminUser) {
-      // Update last login time
-      try {
-        const container = getCosmosContainer();
-        const updatedUser = {
-          ...adminUser,
-          lastLoginAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        await container.item(adminUser.id, adminUser.id).replace(updatedUser);
-      } catch (error) {
-        console.error('Error updating last login time:', error);
+    // Handle Azure App Service v2 format (array with user data)
+    if (Array.isArray(authData) && authData.length > 0 && authData[0].user_id) {
+      const userInfo = authData[0];
+      
+      // Find GitHub username from claims
+      let username = 'Unknown User';
+      if (userInfo.user_claims && Array.isArray(userInfo.user_claims)) {
+        const loginClaim = userInfo.user_claims.find((claim: any) => claim.typ === 'urn:github:login');
+        username = loginClaim?.val || userInfo.user_id;
       }
 
-      return {
-        isAuthenticated: true,
-        isAuthorized: true,
-        user: {
-          githubUsername: adminUser.githubUsername,
-          githubUserId: adminUser.githubUserId,
-          displayName: adminUser.displayName,
-          role: adminUser.role,
-          permissions: adminUser.permissions
-        }
-      };
+      // Check database for admin user
+      const adminUser = await getAdminUserFromDatabase(username, userInfo.user_id);
+      
+      if (adminUser) {
+        return {
+          isAuthenticated: true,
+          isAuthorized: true,
+          user: {
+            githubUsername: adminUser.githubUsername,
+            githubUserId: adminUser.githubUserId,
+            displayName: adminUser.displayName,
+            role: adminUser.role,
+            permissions: adminUser.permissions
+          }
+        };
+      }
+
+      // Fallback to legacy whitelist
+      if (LEGACY_ALLOWED_ADMIN_USERS.includes(username)) {
+        return {
+          isAuthenticated: true,
+          isAuthorized: true,
+          user: {
+            githubUsername: username,
+            githubUserId: userInfo.user_id,
+            displayName: username,
+            role: 'super_admin'
+          }
+        };
+      }
     }
 
-    // Fallback to legacy whitelist for backward compatibility
-    const isLegacyAuthorized = LEGACY_ALLOWED_ADMIN_USERS.includes(username);
+    return { isAuthenticated: false, isAuthorized: false };
+  } catch (error) {
+    console.error('Error in getAuthFromEndpoint:', error);
+    return { isAuthenticated: false, isAuthorized: false };
+  }
+}
 
-    return {
-      isAuthenticated: true,
-      isAuthorized: isLegacyAuthorized,
-      user: isLegacyAuthorized ? {
-        githubUsername: username,
-        githubUserId: userInfo.user_id,
-        displayName: username,
-        role: 'super_admin' // Legacy users get super_admin role
-      } : undefined
-    };
+export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
+  try {
+    // Debug: Log available headers
+    console.log('=== VERIFYAUTH DEBUG START ===');
+    console.log('Available auth headers:', {
+      'x-ms-client-principal': !!request.headers.get('x-ms-client-principal'),
+      'x-ms-client-principal-name': request.headers.get('x-ms-client-principal-name'),
+      'x-ms-client-principal-id': request.headers.get('x-ms-client-principal-id'),
+      'cookie': !!request.headers.get('cookie'),
+      'host': request.headers.get('host')
+    });
+
+    // Method 1: Try x-ms-client-principal header (standard Azure App Service)
+    const authHeader = request.headers.get('x-ms-client-principal');
+    
+    if (authHeader) {
+      console.log('Found x-ms-client-principal header, attempting to decode...');
+      try {
+        // Decode the base64 encoded auth data
+        const authData = JSON.parse(Buffer.from(authHeader, 'base64').toString());
+        
+        if (authData && Array.isArray(authData) && authData.length > 0) {
+          const userInfo: AzureAuthUser = authData[0];
+          
+          if (userInfo.user_id) {
+            // Extract GitHub username
+            const loginClaim = userInfo.user_claims?.find(
+              claim => claim.typ === 'urn:github:login'
+            );
+            const username = loginClaim?.val || userInfo.user_id;
+            
+            console.log('Extracted username from header:', username);
+            console.log('User ID from header:', userInfo.user_id);
+
+            // First check database for admin user
+            console.log('Checking database for admin user...');
+            const adminUser = await getAdminUserFromDatabase(username, userInfo.user_id);
+            console.log('Database query result:', adminUser ? 'Found admin user' : 'No admin user found');
+            
+            if (adminUser) {
+              // Update last login time
+              try {
+                const container = getCosmosContainer();
+                const updatedUser = {
+                  ...adminUser,
+                  lastLoginAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                };
+                await container.item(adminUser.id, adminUser.id).replace(updatedUser);
+              } catch (error) {
+                console.error('Error updating last login time:', error);
+              }
+
+              return {
+                isAuthenticated: true,
+                isAuthorized: true,
+                user: {
+                  githubUsername: adminUser.githubUsername,
+                  githubUserId: adminUser.githubUserId,
+                  displayName: adminUser.displayName,
+                  role: adminUser.role,
+                  permissions: adminUser.permissions
+                }
+              };
+            }
+
+            // Fallback to legacy whitelist for backward compatibility
+            console.log('Checking legacy whitelist for username:', username);
+            console.log('Legacy allowed users:', LEGACY_ALLOWED_ADMIN_USERS);
+            const isLegacyAuthorized = LEGACY_ALLOWED_ADMIN_USERS.includes(username);
+            console.log('Is legacy authorized:', isLegacyAuthorized);
+
+            if (isLegacyAuthorized) {
+              return {
+                isAuthenticated: true,
+                isAuthorized: true,
+                user: {
+                  githubUsername: username,
+                  githubUserId: userInfo.user_id,
+                  displayName: username,
+                  role: 'super_admin'
+                }
+              };
+            }
+          }
+        }
+      } catch (headerError) {
+        console.error('Error parsing x-ms-client-principal header:', headerError);
+      }
+    }
+
+    // Method 2: Try alternative headers
+    const principalName = request.headers.get('x-ms-client-principal-name');
+    const principalId = request.headers.get('x-ms-client-principal-id');
+    
+    if (principalName && principalId) {
+      console.log('Found alternative auth headers:', { principalName, principalId });
+      
+      const adminUser = await getAdminUserFromDatabase(principalName, principalId);
+      if (adminUser) {
+        return {
+          isAuthenticated: true,
+          isAuthorized: true,
+          user: {
+            githubUsername: adminUser.githubUsername,
+            githubUserId: adminUser.githubUserId,
+            displayName: adminUser.displayName,
+            role: adminUser.role,
+            permissions: adminUser.permissions
+          }
+        };
+      }
+
+      if (LEGACY_ALLOWED_ADMIN_USERS.includes(principalName)) {
+        return {
+          isAuthenticated: true,
+          isAuthorized: true,
+          user: {
+            githubUsername: principalName,
+            githubUserId: principalId,
+            displayName: principalName,
+            role: 'super_admin'
+          }
+        };
+      }
+    }
+
+    // Method 3: Try /.auth/me endpoint as fallback
+    console.log('Trying /.auth/me endpoint as fallback...');
+    const endpointResult = await getAuthFromEndpoint(request);
+    if (endpointResult.isAuthenticated) {
+      return endpointResult;
+    }
+
+    console.log('All authentication methods failed');
+    console.log('=== VERIFYAUTH DEBUG END ===');
+    return { isAuthenticated: false, isAuthorized: false };
+    
   } catch (error) {
     console.error('Auth verification error:', error);
     return { isAuthenticated: false, isAuthorized: false };

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCosmosContainer } from '@/lib/cosmos';
 import { AdminUser } from '@/lib/database-schema';
+import { verifyAuth } from '@/lib/auth';
 
 // Legacy whitelist for backward compatibility during migration
 const LEGACY_ALLOWED_ADMIN_USERS = [
