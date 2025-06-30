@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cosmosOperations } from '@/lib/cosmos';
 import { ContactMessage, CONTACT_STATUSES, PRIORITY_LEVELS, VALIDATION_RULES } from '@/lib/database-schema';
 import { nanoid } from 'nanoid';
+import { verifyAuth, createAuthResponse } from '@/lib/auth';
 
 // GET - Retrieve contact messages (admin only)
 export async function GET(request: NextRequest) {
+  // Check admin authorization
+  const auth = await verifyAuth(request);
+  if (!auth.isAuthenticated) {
+    return createAuthResponse('Authentication required');
+  }
+  if (!auth.isAuthorized) {
+    return createAuthResponse('Admin access required', 403);
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') as ContactMessage['status'];
@@ -176,6 +186,15 @@ export async function POST(request: NextRequest) {
 
 // PUT - Update a contact message (admin only)
 export async function PUT(request: NextRequest) {
+  // Check admin authorization
+  const auth = await verifyAuth(request);
+  if (!auth.isAuthenticated) {
+    return createAuthResponse('Authentication required');
+  }
+  if (!auth.isAuthorized) {
+    return createAuthResponse('Admin access required', 403);
+  }
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -229,6 +248,15 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Delete a contact message (admin only)
 export async function DELETE(request: NextRequest) {
+  // Check admin authorization
+  const auth = await verifyAuth(request);
+  if (!auth.isAuthenticated) {
+    return createAuthResponse('Authentication required');
+  }
+  if (!auth.isAuthorized) {
+    return createAuthResponse('Admin access required', 403);
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

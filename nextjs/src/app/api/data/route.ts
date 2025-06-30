@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cosmosOperations, testConnection } from '@/lib/cosmos';
 import { nanoid } from 'nanoid';
+import { verifyAuth, createAuthResponse } from '@/lib/auth';
 
 // GET - Retrieve all documents or test connection
 export async function GET(request: NextRequest) {
@@ -37,6 +38,15 @@ export async function GET(request: NextRequest) {
 
 // POST - Create a new document
 export async function POST(request: NextRequest) {
+  // Check admin authorization
+  const auth = await verifyAuth(request);
+  if (!auth.isAuthenticated) {
+    return createAuthResponse('Authentication required');
+  }
+  if (!auth.isAuthorized) {
+    return createAuthResponse('Admin access required', 403);
+  }
+
   try {
     const body = await request.json();
     
@@ -65,6 +75,15 @@ export async function POST(request: NextRequest) {
 
 // PUT - Update an existing document
 export async function PUT(request: NextRequest) {
+  // Check admin authorization
+  const auth = await verifyAuth(request);
+  if (!auth.isAuthenticated) {
+    return createAuthResponse('Authentication required');
+  }
+  if (!auth.isAuthorized) {
+    return createAuthResponse('Admin access required', 403);
+  }
+
   try {
     const body = await request.json();
     const { id, ...updateData } = body;
@@ -101,6 +120,15 @@ export async function PUT(request: NextRequest) {
 
 // DELETE - Delete a document
 export async function DELETE(request: NextRequest) {
+  // Check admin authorization
+  const auth = await verifyAuth(request);
+  if (!auth.isAuthenticated) {
+    return createAuthResponse('Authentication required');
+  }
+  if (!auth.isAuthorized) {
+    return createAuthResponse('Admin access required', 403);
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

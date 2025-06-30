@@ -69,13 +69,11 @@ async function getAuthFromEndpoint(request: NextRequest): Promise<AuthResult> {
     });
 
     if (!authResponse.ok) {
-      console.log('Auth endpoint not available or returned error:', authResponse.status);
       return { isAuthenticated: false, isAuthorized: false };
     }
 
     const responseText = await authResponse.text();
     if (!responseText.trim()) {
-      console.log('Auth endpoint returned empty response');
       return { isAuthenticated: false, isAuthorized: false };
     }
 
@@ -83,7 +81,6 @@ async function getAuthFromEndpoint(request: NextRequest): Promise<AuthResult> {
     try {
       authData = JSON.parse(responseText);
     } catch (parseError) {
-      console.log('Failed to parse auth response:', parseError);
       return { isAuthenticated: false, isAuthorized: false };
     }
 
@@ -139,21 +136,9 @@ async function getAuthFromEndpoint(request: NextRequest): Promise<AuthResult> {
 
 export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
   try {
-    // Debug: Log available headers
-    console.log('=== VERIFYAUTH DEBUG START ===');
-    console.log('Available auth headers:', {
-      'x-ms-client-principal': !!request.headers.get('x-ms-client-principal'),
-      'x-ms-client-principal-name': request.headers.get('x-ms-client-principal-name'),
-      'x-ms-client-principal-id': request.headers.get('x-ms-client-principal-id'),
-      'cookie': !!request.headers.get('cookie'),
-      'host': request.headers.get('host')
-    });
-
-    // Method 1: Try x-ms-client-principal header (standard Azure App Service)
     const authHeader = request.headers.get('x-ms-client-principal');
     
     if (authHeader) {
-      console.log('Found x-ms-client-principal header, attempting to decode...');
       try {
         // Decode the base64 encoded auth data
         const authData = JSON.parse(Buffer.from(authHeader, 'base64').toString());
@@ -168,13 +153,8 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
             );
             const username = loginClaim?.val || userInfo.user_id;
             
-            console.log('Extracted username from header:', username);
-            console.log('User ID from header:', userInfo.user_id);
-
             // First check database for admin user
-            console.log('Checking database for admin user...');
             const adminUser = await getAdminUserFromDatabase(username, userInfo.user_id);
-            console.log('Database query result:', adminUser ? 'Found admin user' : 'No admin user found');
             
             if (adminUser) {
               // Update last login time
@@ -204,10 +184,7 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
             }
 
             // Fallback to legacy whitelist for backward compatibility
-            console.log('Checking legacy whitelist for username:', username);
-            console.log('Legacy allowed users:', LEGACY_ALLOWED_ADMIN_USERS);
             const isLegacyAuthorized = LEGACY_ALLOWED_ADMIN_USERS.includes(username);
-            console.log('Is legacy authorized:', isLegacyAuthorized);
 
             if (isLegacyAuthorized) {
               return {
@@ -233,7 +210,6 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
     const principalId = request.headers.get('x-ms-client-principal-id');
     
     if (principalName && principalId) {
-      console.log('Found alternative auth headers:', { principalName, principalId });
       
       const adminUser = await getAdminUserFromDatabase(principalName, principalId);
       if (adminUser) {
@@ -265,18 +241,14 @@ export async function verifyAuth(request: NextRequest): Promise<AuthResult> {
     }
 
     // Method 3: Try /.auth/me endpoint as fallback
-    console.log('Trying /.auth/me endpoint as fallback...');
     const endpointResult = await getAuthFromEndpoint(request);
     if (endpointResult.isAuthenticated) {
       return endpointResult;
     }
 
-    console.log('All authentication methods failed');
-    console.log('=== VERIFYAUTH DEBUG END ===');
     return { isAuthenticated: false, isAuthorized: false };
     
   } catch (error) {
-    console.error('Auth verification error:', error);
     return { isAuthenticated: false, isAuthorized: false };
   }
 }

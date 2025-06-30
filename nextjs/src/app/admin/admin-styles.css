@@ -51,13 +51,6 @@
   color: #111827 !important; /* gray-900 */
 }
 
-/* Ensure all text content is visible */
-.admin-panel p,
-.admin-panel span,
-.admin-panel div {
-  color: inherit;
-}
-
 /* Fix star rating colors - override the inherit rule for star elements */
 .admin-panel .text-yellow-400 {
   color: #fbbf24 !important; /* yellow-400 */
