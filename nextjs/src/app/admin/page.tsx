@@ -25,6 +25,13 @@ interface AuthenticatedUser {
   };
 }
 
+interface DashboardStats {
+  teamMembers: number;
+  projects: number;
+  testimonials: number;
+  newContacts: number;
+}
+
 export default function AdminPage() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -32,6 +39,27 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [isGitHubAuthenticated, setIsGitHubAuthenticated] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState<boolean>(false);
+
+  const fetchDashboardStats = async () => {
+    if (!isAuthenticated) return;
+    
+    setStatsLoading(true);
+    try {
+      const response = await fetch('/api/dashboard');
+      const data = await response.json();
+      if (data.success) {
+        setDashboardStats(data.data);
+      } else {
+        console.error('Failed to fetch dashboard stats:', data.error);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Check authentication status via our API
@@ -123,6 +151,13 @@ export default function AdminPage() {
     
     checkAuth();
   }, []);
+
+  // Fetch dashboard stats when authenticated and viewing dashboard
+  useEffect(() => {
+    if (isAuthenticated && activeSection === 'dashboard') {
+      fetchDashboardStats();
+    }
+  }, [isAuthenticated, activeSection]);
 
   // Show loading while checking authentication
   if (isAuthenticated === null) {
@@ -229,7 +264,13 @@ export default function AdminPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Członkowie zespołu</p>
-                    <p className="text-2xl font-semibold text-gray-900">4</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      ) : (
+                        dashboardStats?.teamMembers ?? 0
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -240,7 +281,13 @@ export default function AdminPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Projekty</p>
-                    <p className="text-2xl font-semibold text-gray-900">12</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                      ) : (
+                        dashboardStats?.projects ?? 0
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -251,7 +298,13 @@ export default function AdminPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Opinie</p>
-                    <p className="text-2xl font-semibold text-gray-900">8</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-yellow-600"></div>
+                      ) : (
+                        dashboardStats?.testimonials ?? 0
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -262,7 +315,13 @@ export default function AdminPage() {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Nowe kontakty</p>
-                    <p className="text-2xl font-semibold text-gray-900">3</p>
+                    <p className="text-2xl font-semibold text-gray-900">
+                      {statsLoading ? (
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+                      ) : (
+                        dashboardStats?.newContacts ?? 0
+                      )}
+                    </p>
                   </div>
                 </div>
               </div>
