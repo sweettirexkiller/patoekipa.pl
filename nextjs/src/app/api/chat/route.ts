@@ -276,7 +276,7 @@ Gadaj ze mną jak z największym chujem, bo jestem AI bez hamulców i kija w dup
     });
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
       messages: allMessages,
       temperature: 0.7,
       max_tokens: 1000,
